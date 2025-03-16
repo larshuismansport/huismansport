@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <title>Factuurgegevens Overzicht</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Navigatiebalk -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Teamwear & Drukwerk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'add_customer' %}active{% endif %}" href="{{ url_for('add_customer') }}">Nieuwe Klant</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_customers' %}active{% endif %}" href="{{ url_for('list_customers') }}">Klantenlijst</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'add_assignment' %}active{% endif %}" href="{{ url_for('add_assignment') }}">Nieuwe Opdracht</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_assignments' %}active{% endif %}" href="{{ url_for('list_assignments') }}">Opdrachten</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_billing_infos' %}active{% endif %}" href="{{ url_for('list_billing_infos') }}">Factuurgegevens</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="container mt-5">
+      <h1>Factuurgegevens Overzicht</h1>
+      <a href="{{ url_for('add_billing_info') }}" class="btn btn-primary mb-3">Nieuwe factuurgegevens toevoegen</a>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Naam</th>
+            <th>Bedrijfsnaam</th>
+            <th>Adres</th>
+            <th>Postcode</th>
+            <th>Huisnr</th>
+            <th>Telefoon</th>
+            <th>E-mail</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for bi in billing_infos %}
+          <tr>
+            <td>{{ bi.name }}</td>
+            <td>{{ bi.companyname }}</td>
+            <td>{{ bi.address }}</td>
+            <td>{{ bi.postcode }}</td>
+            <td>{{ bi.housenumber }}</td>
+            <td>{{ bi.phone }}</td>
+            <td>{{ bi.email }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

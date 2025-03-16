@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Klanten Overzicht | Teamwear & Drukwerk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+      function confirmDeletion() {
+          return confirm("Weet u zeker dat u deze klant wilt verwijderen? Dit kan niet ongedaan gemaakt worden.");
+      }
+    </script>
+    <style>
+      /* Extra styling voor het zoekveld */
+      #searchInput {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigatiebalk -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Teamwear & Drukwerk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'add_customer' %}active{% endif %}" href="{{ url_for('add_customer') }}">Nieuwe Klant</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_customers' %}active{% endif %}" href="{{ url_for('list_customers') }}">Klantenlijst</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'add_assignment' %}active{% endif %}" href="{{ url_for('add_assignment') }}">Nieuwe Opdracht</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_assignments' %}active{% endif %}" href="{{ url_for('list_assignments') }}">Opdrachten</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_billing_infos' %}active{% endif %}" href="{{ url_for('list_billing_infos') }}">Factuurgegevens</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Hoofdinhoud -->
+    <div class="container mt-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Klanten Overzicht</h1>
+        <a href="{{ url_for('add_customer') }}" class="btn btn-primary">Voeg Nieuwe Klant Toe</a>
+      </div>
+      
+      <!-- Zoekveld -->
+      <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Typ om te zoeken...">
+      </div>
+      
+      <table class="table table-striped" id="customersTable">
+        <thead class="table-primary">
+          <tr>
+            <th>Naam opdrachtgever</th>
+            <th>Email opdrachtgever</th>
+            <th>Telefoonnummer opdrachtgever</th>
+            <th>Vereniging</th>
+            <th>Bedrijfsnaam (factuurgegevens)</th>
+            <th>Referentie</th>
+            <th>Acties</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for customer in customers %}
+          <tr>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.telefoon if customer.telefoon else '-' }}</td>
+            <td>
+              {% if customer.vereniging %}
+                {{ customer.vereniging }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              {% if customer.billing_info %}
+                {{ customer.billing_info.companyname }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>{{ customer.referentie if customer.referentie else '-' }}</td>
+            <td>
+              <a href="{{ url_for('edit_customer', id=customer.id) }}" class="btn btn-sm btn-warning">Bewerk</a>
+              <form action="{{ url_for('delete_customer', id=customer.id) }}" method="post" style="display:inline;" onsubmit="return confirmDeletion();">
+                <button type="submit" class="btn btn-sm btn-danger">Verwijder</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Zoekfunctie: filtert de tabelrijen op basis van alle kolommen
+      document.getElementById('searchInput').addEventListener('input', function() {
+        var filter = this.value.toLowerCase();
+        var table = document.getElementById('customersTable');
+        var rows = table.getElementsByTagName('tr');
+        
+        // Begin bij 1 om de header over te slaan
+        for (var i = 1; i < rows.length; i++) {
+          var cells = rows[i].getElementsByTagName('td');
+          var rowContainsQuery = false;
+          
+          // Loop over alle cellen in deze rij
+          for (var j = 0; j < cells.length; j++) {
+            var cellText = cells[j].textContent || cells[j].innerText;
+            if (cellText.toLowerCase().indexOf(filter) > -1) {
+              rowContainsQuery = true;
+              break;
+            }
+          }
+          rows[i].style.display = rowContainsQuery ? "" : "none";
+        }
+      });
+    </script>    
+  </body>
+</html>

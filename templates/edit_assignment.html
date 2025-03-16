@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <title>Opdracht Bewerken | Teamwear & Drukwerk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Navigatiebalk -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Teamwear & Drukwerk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'add_customer' %}active{% endif %}" href="{{ url_for('add_customer') }}">Nieuwe Klant</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_customers' %}active{% endif %}" href="{{ url_for('list_customers') }}">Klantenlijst</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'add_assignment' %}active{% endif %}" href="{{ url_for('add_assignment') }}">Nieuwe Opdracht</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_assignments' %}active{% endif %}" href="{{ url_for('list_assignments') }}">Opdrachten</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_billing_infos' %}active{% endif %}" href="{{ url_for('list_billing_infos') }}">Factuurgegevens</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+      
+    <!-- Hoofdinhoud -->
+    <div class="container mt-5">
+      <h1>Opdracht Bewerken</h1>
+      <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="customer_id" class="form-label">Klant:</label>
+          <select class="form-select" id="customer_id" name="customer_id" required>
+            {% for customer in customers %}
+              <option value="{{ customer.id }}" {% if customer.id == assignment.customer_id %}selected{% endif %}>
+                {{ customer.name }} ({{ customer.email }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="title" class="form-label">Opdracht Titel:</label>
+          <input type="text" class="form-control" id="title" name="title" value="{{ assignment.title }}" required>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Opdracht Omschrijving:</label>
+          <textarea class="form-control" id="description" name="description" rows="5" required>{{ assignment.description }}</textarea>
+        </div>
+        <div class="mb-3">
+          <label for="status" class="form-label">Status:</label>
+          <select class="form-select" id="status" name="status" required>
+            <option value="Nieuw" {% if assignment.status == 'Nieuw' %}selected{% endif %}>Nieuw</option>
+            <option value="In behandeling" {% if assignment.status == 'In behandeling' %}selected{% endif %}>In behandeling</option>
+            <option value="Afgerond" {% if assignment.status == 'Afgerond' %}selected{% endif %}>Afgerond</option>
+            <option value="Wachtend op akkoord" {% if assignment.status == 'Wachtend op akkoord' %}selected{% endif %}>Wachtend op akkoord</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="file" class="form-label">Upload Nieuwe Voorbeeld (optioneel):</label>
+          <input class="form-control" type="file" id="file" name="file">
+        </div>
+        <button type="submit" class="btn btn-primary">Opslaan</button>
+        <a href="{{ url_for('list_assignments') }}" class="btn btn-secondary">Annuleren</a>
+      </form>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

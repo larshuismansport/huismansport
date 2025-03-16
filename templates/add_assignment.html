@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <title>Nieuwe Opdracht | Teamwear & Drukwerk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* Algemene styling voor de zoekfunctie */
+      #customerSuggestions {
+        position: absolute;
+        z-index: 1000;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        background: white;
+        display: none;
+      }
+      #customerSuggestions .suggestion-item {
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+      #customerSuggestions .suggestion-item:hover {
+        background: #f0f0f0;
+      }
+      .position-relative {
+        position: relative;
+      }
+
+      /* Klein lettertype */
+      body, .form-label, p {
+        font-size: 0.9rem;
+      }
+
+      /* Container en blokken */
+      .blocks-section {
+        background-color: white;
+        padding: 2rem;
+      }
+
+      /* Card styling */
+      .card {
+        border: none;
+      }
+      .card-body {
+        background-color: #f7f7f7; /* Licht grijzige achtergrond */
+        padding: 1rem;
+        overflow: hidden;
+        position: relative;
+      }
+      .card-body .mb-3 {
+        margin-bottom: 0.75rem;
+      }
+
+      /* Bloktitels in hoofdletters */
+      .block-title {
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      /* Scheidingslijn tussen kolommen */
+      .col-divider {
+        border-right: 1px solid #ddd;
+      }
+      .col-divider:last-child {
+        border-right: none;
+      }
+
+      /* Statische data weergave */
+      .form-control-plaintext {
+        padding: .375rem .75rem;
+        margin-bottom: 0;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+      }
+
+      /* Opslaan knop rechtsboven */
+      .save-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1050;
+      }
+
+      /* Toggle-knoppen (klein) */
+      .btn-toggle {
+        position: absolute;
+        right: 0.5rem;
+        bottom: 0.5rem;
+      }
+
+      /* Extra blokken: vergrote min-height en geen overflow hidden */
+      .extra-block .card-body {
+        background-color: #f7f7f7;
+        padding: 1rem;
+        min-height: 180px;
+        overflow: visible;
+      }
+
+      /* Styling voor de status-checklist dropdown */
+      .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      #selectedStatus {
+        font-size: 0.85rem;
+        color: #555;
+      }
+
+      /* Grotere breedte voor de T-shirt afbeelding */
+      .standardImage {
+        max-width: 100%;
+        display: none; /* standaard verborgen (alleen T-shirt) */
+        margin-top: 1rem;
+      }
+
+      /* Tabelkolommen voor maat, aantal, drukwerk letter, omschrijving, kleur */
+      .sizeTable th,
+      .sizeTable td {
+        vertical-align: middle;
+      }
+      /* Maak de eerste drie kolommen smaller */
+      .col-maat,
+      .col-aantal,
+      .col-letter {
+        width: 10%;
+        min-width: 70px;
+      }
+      /* Maak omschrijving en kleur wat breder */
+      .col-omschrijving {
+        width: 40%;
+      }
+      .col-kleur {
+        width: 20%;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Navigatiebalk (voorbeeld) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Teamwear & Drukwerk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('add_customer') }}">Nieuwe Klant</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('list_customers') }}">Klantenlijst</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('add_assignment') }}">Nieuwe Opdracht</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('list_assignments') }}">Opdrachten</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('list_billing_infos') }}">Factuurgegevens</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5 position-relative">
+      <h1>Nieuwe Opdracht</h1>
+      <!-- Opslaan knop rechtsboven -->
+      <button type="submit" form="editCustomerForm" class="btn btn-primary save-btn">Opslaan</button>
+
+      <!-- Zoekbalk om klant te selecteren -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="mb-3 position-relative">
+            <label for="customer_search" class="form-label">Zoek Klant:</label>
+            <input type="text" class="form-control" id="customer_search" name="customer_search" placeholder="Typ naam, e-mail, vereniging, referentie of bedrijfsnaam" autocomplete="off">
+            <div id="customerSuggestions"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hoofdblokken (drie kolommen) -->
+      <div class="blocks-section">
+        <form method="post" id="editCustomerForm">
+          <div class="row">
+            <!-- Linker blok: Opdrachtgever -->
+            <div class="col-md-4 col-divider mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body" id="leftBlockContent">
+                  <h3 class="block-title">Opdrachtgever</h3>
+                  <div class="mb-3">
+                    <label class="form-label">Naam:</label>
+                    <p id="nameDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="name" name="name">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Email:</label>
+                    <p id="emailDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="email" name="email">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Telefoonnummer:</label>
+                    <p id="telefoonDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="telefoon" name="telefoon">
+                  </div>
+                  <input type="hidden" id="customer_id" name="customer_id">
+                </div>
+              </div>
+            </div>
+
+            <!-- Middelste blok: Factuurgegevens -->
+            <div class="col-md-4 col-divider mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body" id="middleBlockContent">
+                  <h3 class="block-title">Factuurgegevens</h3>
+                  <div class="mb-3">
+                    <label class="form-label">Naam:</label>
+                    <p id="factuur_naamDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="factuur_naam" name="factuur_naam">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Bedrijfsnaam:</label>
+                    <p id="factuur_companynameDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="factuur_companyname" name="factuur_companyname">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Adres:</label>
+                    <p id="factuur_adresDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="factuur_adres" name="factuur_adres">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Postcode:</label>
+                    <p id="factuur_postcodeDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="factuur_postcode" name="factuur_postcode">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Huisnummer:</label>
+                    <p id="factuur_huisnummerDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="factuur_huisnummer" name="factuur_huisnummer">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Telefoonnummer:</label>
+                    <p id="factuur_telefoonDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="factuur_telefoon" name="factuur_telefoon">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">E-mail:</label>
+                    <p id="factuur_emailDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="factuur_email" name="factuur_email">
+                  </div>
+                  <button type="button" class="btn btn-sm btn-link btn-toggle" id="toggleMiddle" style="display:none;">Uitvouw</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rechter blok: Vereniging -->
+            <div class="col-md-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body" id="rightBlockContent">
+                  <h3 class="block-title">Vereniging</h3>
+                  <div class="mb-3">
+                    <label class="form-label">Vereniging:</label>
+                    <p id="verenigingDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="vereniging" name="vereniging">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Referentie:</label>
+                    <p id="referentieDisplay" class="form-control-plaintext"></p>
+                    <input type="hidden" id="referentie" name="referentie">
+                  </div>
+                  <button type="button" class="btn btn-sm btn-link btn-toggle" id="toggleRight" style="display:none;">Uitvouw</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Extra rij met vrije invulvelden -->
+          <div class="row">
+            <!-- Extra blok links: Status opdracht (met multi-select checklist) -->
+            <div class="col-md-4 col-divider mb-4 extra-block">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h3 class="block-title">Status opdracht</h3>
+                  <div class="dropdown mb-2">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      Selecteer status
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="order besteld" id="status1">
+                          <label class="form-check-label" for="status1">order besteld</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="order geleverd" id="status2">
+                          <label class="form-check-label" for="status2">order geleverd</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="order compleet" id="status3">
+                          <label class="form-check-label" for="status3">order compleet</label>
+                        </div>
+                      </li>
+                      <!-- lege regel ter visuele scheiding -->
+                      <li><hr class="dropdown-divider"></li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="drukwerk voorbereid" id="status4">
+                          <label class="form-check-label" for="status4">drukwerk voorbereid</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="aan het drukken" id="status5">
+                          <label class="form-check-label" for="status5">aan het drukken</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="drukwerk afgerond" id="status6">
+                          <label class="form-check-label" for="status6">drukwerk afgerond</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="gecontroleerd" id="status7">
+                          <label class="form-check-label" for="status7">gecontroleerd</label>
+                        </div>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="offerte gestuurd" id="status8">
+                          <label class="form-check-label" for="status8">offerte gestuurd</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="voorbeelden gestuurd" id="status9">
+                          <label class="form-check-label" for="status9">voorbeelden gestuurd</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="factuur gestuurd" id="status10">
+                          <label class="form-check-label" for="status10">factuur gestuurd</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="klant bericht" id="status11">
+                          <label class="form-check-label" for="status11">klant bericht</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="volledig afgerond" id="status12">
+                          <label class="form-check-label" for="status12">volledig afgerond</label>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <div id="selectedStatus" class="mb-3"></div>
+                  <input type="hidden" id="status_opdracht" name="status_opdracht">
+                </div>
+              </div>
+            </div>
+
+            <!-- Extra blok midden: Deadline -->
+            <div class="col-md-4 col-divider mb-4 extra-block">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h3 class="block-title">Deadline</h3>
+                  <div class="mb-3">
+                    <input type="date" class="form-control" id="deadline" name="deadline">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Extra blok rechts: Opmerkingen -->
+            <div class="col-md-4 mb-4 extra-block">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h3 class="block-title">Opmerkingen</h3>
+                  <div class="mb-3">
+                    <textarea class="form-control" id="opmerkingen" name="opmerkingen" rows="3" placeholder="Voer hier eventuele opmerkingen in"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- DYNAMISCHE SECTIES (PRODUCTEN) -->
+          <div class="row">
+            <div class="col-12">
+              <!-- Container voor toegevoegde secties -->
+              <div id="itemsContainer" class="mt-4"></div>
+
+              <!-- Template (verborgen) voor een nieuwe sectie -->
+              <div id="itemSectionTemplate" style="display: none;">
+                <div class="card shadow-sm my-3">
+                  <div class="card-body">
+                    <h3 class="block-title">[ITEM TYPE]</h3>
+                    
+                    <!-- Bovenste rij met merk, artikelnummer, artikelomschrijving -->
+                    <div class="row mb-3">
+                      <div class="col-md-4">
+                        <label class="form-label">Merk:</label>
+                        <input type="text" class="form-control productMerk">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Artikelnummer:</label>
+                        <input type="text" class="form-control productArtikelnummer">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Artikelomschrijving:</label>
+                        <input type="text" class="form-control productArtikelOmschrijving">
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <!-- Linkerkolom: file upload + geüploade preview + standaardafbeelding (alleen bij T-shirt) -->
+                      <div class="col-md-4">
+                        <!-- File upload -->
+                        <div class="mb-3">
+                          <label class="form-label">Productafbeelding:</label>
+                          <input type="file" class="form-control productImageUpload" accept="image/*">
+                        </div>
+                        <!-- Preview van geüploade afbeelding (standaard verborgen) -->
+                        <div class="mb-3">
+                          <img src="" alt="Preview" class="img-fluid previewImage" style="display:none; max-width:120px;">
+                        </div>
+                        <!-- Standaardafbeelding voor T-shirt (verborgen totdat itemType=='T-shirt') -->
+                        <div>
+                          <img src="" alt="Shirt Layout" class="img-fluid standardImage">
+                        </div>
+                      </div>
+
+                      <!-- Rechterkolom: tabel met Maat + Aantal + Drukwerk letter + Omschrijving + Kleur -->
+                      <div class="col-md-8">
+                        <table class="table table-bordered align-middle mb-3 sizeTable">
+                          <thead>
+                            <tr>
+                              <th class="col-maat">Maat</th>
+                              <th class="col-aantal">Aantal</th>
+                              <th class="col-letter">Letter</th>
+                              <th class="col-omschrijving">Omschrijving</th>
+                              <th class="col-kleur">Kleur</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!-- Eén start-rij -->
+                            <tr>
+                              <td><input type="text" class="form-control" placeholder="Bijv. S, M, 152"></td>
+                              <td><input type="number" class="form-control" placeholder="Aantal..."></td>
+                              <td><input type="text" class="form-control" placeholder="Bijv. A"></td>
+                              <td><input type="text" class="form-control" placeholder="Drukwerk omschrijving"></td>
+                              <td><input type="text" class="form-control" placeholder="Kleur"></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <button type="button" class="btn btn-sm btn-secondary addSizeRowBtn">+ Maat toevoegen</button>
+                      </div>
+                    </div>
+                    <!-- Verwijder-knop -->
+                    <div class="text-end mt-3">
+                      <button type="button" class="btn btn-sm btn-danger removeItemBtn">
+                        Verwijder sectie
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Plusknop met dropdown om items toe te voegen -->
+              <div class="dropdown my-3">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="addNewItemBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                  + Item toevoegen
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="addNewItemBtn" id="itemOptionsMenu">
+                  <li><a class="dropdown-item" href="#" data-itemtype="T-shirt">T-shirt</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="Trui">Trui</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="Vest">Vest</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="Korte broek">Korte broek</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="Lange broek">Lange broek</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="Tas">Tas</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="overig">overig</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="voorbeelden">voorbeelden</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="bestanden">bestanden</a></li>
+                </ul>
+              </div>
+              <!-- EINDE dynamische items -->
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS-bundel -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script: alles binnen DOMContentLoaded -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+      // ---------------------------------------
+      // A) Hoogte / Uitvouwen van de blokken
+      // ---------------------------------------
+      function recalcHeights() {
+        var leftBlock = document.getElementById('leftBlockContent');
+        if (!leftBlock) return;
+
+        var middleBlock = document.getElementById('middleBlockContent');
+        var rightBlock = document.getElementById('rightBlockContent');
+        var leftHeight = leftBlock.offsetHeight;
+
+        middleBlock.style.height = leftHeight + 'px';
+        rightBlock.style.height = leftHeight + 'px';
+        
+        // Toggleknoppen alleen tonen als er scrollheight is
+        if (middleBlock.scrollHeight > leftHeight) {
+          document.getElementById('toggleMiddle').style.display = 'block';
+          document.getElementById('toggleMiddle').textContent = 'Uitvouw';
+        } else {
+          document.getElementById('toggleMiddle').style.display = 'none';
+        }
+        if (rightBlock.scrollHeight > leftHeight) {
+          document.getElementById('toggleRight').style.display = 'block';
+          document.getElementById('toggleRight').textContent = 'Uitvouw';
+        } else {
+          document.getElementById('toggleRight').style.display = 'none';
+        }
+      }
+      window.addEventListener('resize', recalcHeights);
+
+      let toggleMiddle = document.getElementById('toggleMiddle');
+      if (toggleMiddle) {
+        toggleMiddle.addEventListener('click', function() {
+          var middleBlock = document.getElementById('middleBlockContent');
+          if (middleBlock.style.height !== 'auto') {
+            middleBlock.style.height = 'auto';
+            this.textContent = 'Inklappen';
+          } else {
+            recalcHeights();
+            this.textContent = 'Uitvouw';
+          }
+        });
+      }
+      
+      let toggleRight = document.getElementById('toggleRight');
+      if (toggleRight) {
+        toggleRight.addEventListener('click', function() {
+          var rightBlock = document.getElementById('rightBlockContent');
+          if (rightBlock.style.height !== 'auto') {
+            rightBlock.style.height = 'auto';
+            this.textContent = 'Inklappen';
+          } else {
+            recalcHeights();
+            this.textContent = 'Uitvouw';
+          }
+        });
+      }
+
+      // ---------------------------------------
+      // B) Klant zoeken (eventlisteners)
+      // ---------------------------------------
+      var customerInfos = {};
+      {% for customer in customers %}
+        {% set search_key = customer.name ~ " - " ~ customer.email ~ " - " ~ (customer.vereniging or "") ~ " - " ~ (customer.referentie or "") ~ " - " ~ (customer.billing_info.companyname if customer.billing_info and customer.billing_info.companyname else "") %}
+        customerInfos["{{ search_key }}"] = {
+          id: "{{ customer.id }}",
+          name: {{ customer.name|tojson }},
+          email: {{ customer.email|tojson }},
+          telefoon: {{ customer.telefoon|tojson if customer.telefoon else '""' }},
+          billing: {
+            name: {{ customer.billing_info.name|tojson if customer.billing_info and customer.billing_info.name else '""' }},
+            companyname: {{ customer.billing_info.companyname|tojson if customer.billing_info and customer.billing_info.companyname else '""' }},
+            address: {{ customer.billing_info.address|tojson if customer.billing_info and customer.billing_info.address else '""' }},
+            postcode: {{ customer.billing_info.postcode|tojson if customer.billing_info and customer.billing_info.postcode else '""' }},
+            housenumber: {{ customer.billing_info.housenumber|tojson if customer.billing_info and customer.billing_info.housenumber else '""' }},
+            phone: {{ customer.billing_info.phone|tojson if customer.billing_info and customer.billing_info.phone else '""' }},
+            email: {{ customer.billing_info.email|tojson if customer.billing_info and customer.billing_info.email else '""' }}
+          },
+          vereniging: {{ customer.vereniging|tojson }},
+          referentie: {{ customer.referentie|tojson if customer.referentie else '""' }}
+        };
+      {% endfor %}
+      
+      var customerSearchInput = document.getElementById('customer_search');
+      var customerSuggestions = document.getElementById('customerSuggestions');
+
+      if (customerSearchInput) {
+        customerSearchInput.addEventListener('input', function() {
+          var query = this.value.toLowerCase();
+          customerSuggestions.innerHTML = '';
+          if (query.length === 0) {
+            customerSuggestions.style.display = 'none';
+            return;
+          }
+          var matches = [];
+          for (var key in customerInfos) {
+            if (key.toLowerCase().indexOf(query) !== -1) {
+              matches.push(key);
+            }
+          }
+          if (matches.length > 0) {
+            customerSuggestions.style.display = 'block';
+            matches.forEach(function(match) {
+              var div = document.createElement('div');
+              div.className = 'suggestion-item';
+              div.textContent = match;
+              div.addEventListener('click', function() {
+                customerSearchInput.value = match;
+                var info = customerInfos[match];
+                // Opdrachtgever
+                document.getElementById('nameDisplay').textContent = info.name;
+                document.getElementById('name').value = info.name;
+                document.getElementById('emailDisplay').textContent = info.email;
+                document.getElementById('email').value = info.email;
+                document.getElementById('telefoonDisplay').textContent = info.telefoon;
+                document.getElementById('telefoon').value = info.telefoon;
+                document.getElementById('customer_id').value = info.id;
+                // Factuurgegevens
+                document.getElementById('factuur_naamDisplay').textContent = info.billing.name;
+                document.getElementById('factuur_naam').value = info.billing.name;
+                document.getElementById('factuur_companynameDisplay').textContent = info.billing.companyname;
+                document.getElementById('factuur_companyname').value = info.billing.companyname;
+                document.getElementById('factuur_adresDisplay').textContent = info.billing.address;
+                document.getElementById('factuur_adres').value = info.billing.address;
+                document.getElementById('factuur_postcodeDisplay').textContent = info.billing.postcode;
+                document.getElementById('factuur_postcode').value = info.billing.postcode;
+                document.getElementById('factuur_huisnummerDisplay').textContent = info.billing.housenumber;
+                document.getElementById('factuur_huisnummer').value = info.billing.housenumber;
+                document.getElementById('factuur_telefoonDisplay').textContent = info.billing.phone;
+                document.getElementById('factuur_telefoon').value = info.billing.phone;
+                document.getElementById('factuur_emailDisplay').textContent = info.billing.email;
+                document.getElementById('factuur_email').value = info.billing.email;
+                // Vereniging
+                document.getElementById('verenigingDisplay').textContent = info.vereniging;
+                document.getElementById('vereniging').value = info.vereniging;
+                document.getElementById('referentieDisplay').textContent = info.referentie;
+                document.getElementById('referentie').value = info.referentie;
+                
+                customerSuggestions.style.display = 'none';
+                recalcHeights();
+              });
+              customerSuggestions.appendChild(div);
+            });
+          } else {
+            customerSuggestions.style.display = 'none';
+          }
+        });
+      }
+
+      // ---------------------------------------
+      // C) Status-checklist dropdown
+      // ---------------------------------------
+      let statusCheckboxes = document.querySelectorAll('.status-option');
+      statusCheckboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+          let selected = [];
+          document.querySelectorAll('.status-option:checked').forEach(function(cb) {
+            selected.push(cb.value);
+          });
+          document.getElementById('selectedStatus').textContent = selected.join(', ');
+          document.getElementById('status_opdracht').value = selected.join(',');
+        });
+      });
+
+      // ---------------------------------------
+      // D) Dynamische secties (items)
+      // ---------------------------------------
+      const itemsContainer = document.getElementById('itemsContainer');
+      const itemSectionTemplate = document.getElementById('itemSectionTemplate');
+      const itemOptionsMenu = document.getElementById('itemOptionsMenu');
+
+      itemOptionsMenu.querySelectorAll('a.dropdown-item').forEach(function(menuItem) {
+        menuItem.addEventListener('click', function(event) {
+          event.preventDefault();
+
+          // Haal gekozen type op (T-shirt, Trui, enz.)
+          const itemType = this.getAttribute('data-itemtype');
+
+          // Template klonen
+          let newSection = itemSectionTemplate.cloneNode(true);
+          newSection.id = "";
+          newSection.style.display = "";
+
+          // Titeltekst aanpassen
+          newSection.querySelector('.block-title').textContent = itemType;
+
+          // Verwijderknop
+          let removeBtn = newSection.querySelector('.removeItemBtn');
+          removeBtn.addEventListener('click', function() {
+            newSection.remove();
+          });
+
+          // Als itemType == "T-shirt" -> toon jouw vaste afbeelding
+          // LET OP dat het pad klopt (waar staat jouw shirt_front_and_back.jpg?)
+          // Bijvoorbeeld:
+          let standardImg = newSection.querySelector('.standardImage');
+          if (itemType === "T-shirt") {
+            standardImg.src = "/static/uploads/img/shirt_front_and_back.jpg";
+            standardImg.style.display = "block";
+          } else {
+            // Voor andere items leeg laten/verbergen
+            standardImg.src = "";
+            standardImg.style.display = "none";
+          }
+
+          // Fileupload + preview
+          let fileInput = newSection.querySelector('.productImageUpload');
+          let previewImg = newSection.querySelector('.previewImage');
+          fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function(evt) {
+                previewImg.src = evt.target.result;
+                previewImg.style.display = "block";
+              };
+              reader.readAsDataURL(file);
+            } else {
+              previewImg.src = "";
+              previewImg.style.display = "none";
+            }
+          });
+
+          // "+ Maat toevoegen"
+          let addSizeRowBtn = newSection.querySelector('.addSizeRowBtn');
+          let sizeTableBody = newSection.querySelector('.sizeTable tbody');
+          addSizeRowBtn.addEventListener('click', function() {
+            let tr = document.createElement('tr');
+
+            // Maat
+            let tdMaat = document.createElement('td');
+            let inputMaat = document.createElement('input');
+            inputMaat.type = "text";
+            inputMaat.placeholder = "Bijv. S, 152...";
+            inputMaat.className = "form-control";
+            tdMaat.appendChild(inputMaat);
+
+            // Aantal
+            let tdAantal = document.createElement('td');
+            let inputAantal = document.createElement('input');
+            inputAantal.type = "number";
+            inputAantal.placeholder = "Aantal...";
+            inputAantal.className = "form-control";
+            tdAantal.appendChild(inputAantal);
+
+            // Drukwerk letter
+            let tdLetter = document.createElement('td');
+            let inputLetter = document.createElement('input');
+            inputLetter.type = "text";
+            inputLetter.placeholder = "Bijv. A";
+            inputLetter.className = "form-control";
+            tdLetter.appendChild(inputLetter);
+
+            // Drukwerk omschrijving
+            let tdOmsch = document.createElement('td');
+            let inputOmsch = document.createElement('input');
+            inputOmsch.type = "text";
+            inputOmsch.placeholder = "Drukwerk omschrijving";
+            inputOmsch.className = "form-control";
+            tdOmsch.appendChild(inputOmsch);
+
+            // Drukwerk kleur
+            let tdKleur = document.createElement('td');
+            let inputKleur = document.createElement('input');
+            inputKleur.type = "text";
+            inputKleur.placeholder = "Kleur";
+            inputKleur.className = "form-control";
+            tdKleur.appendChild(inputKleur);
+
+            // Rij samenstellen
+            tr.appendChild(tdMaat);
+            tr.appendChild(tdAantal);
+            tr.appendChild(tdLetter);
+            tr.appendChild(tdOmsch);
+            tr.appendChild(tdKleur);
+
+            sizeTableBody.appendChild(tr);
+          });
+
+          // Toevoegen aan itemsContainer
+          itemsContainer.appendChild(newSection);
+          newSection.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+
+      // init
+      recalcHeights();
+    });
+    </script>
+  </body>
+</html>

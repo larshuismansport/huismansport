@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teamwear & Drukwerk | Home</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* Eventuele extra styling */
+      .hero {
+        background: linear-gradient(
+          rgba(0, 0, 0, 0.3),
+          rgba(0, 0, 0, 0.3)
+        ), url("https://via.placeholder.com/1200x400") no-repeat center center;
+        background-size: cover;
+        color: #fff;
+        padding: 100px 0;
+        text-align: center;
+      }
+      .hero h1 {
+        font-size: 3rem;
+        font-weight: bold;
+      }
+      .hero p {
+        font-size: 1.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigatiebalk -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Teamwear & Drukwerk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'add_customer' %}active{% endif %}" href="{{ url_for('add_customer') }}">Nieuwe Klant</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_customers' %}active{% endif %}" href="{{ url_for('list_customers') }}">Klantenlijst</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'add_assignment' %}active{% endif %}" href="{{ url_for('add_assignment') }}">Nieuwe Opdracht</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_assignments' %}active{% endif %}" href="{{ url_for('list_assignments') }}">Opdrachten</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'list_billing_infos' %}active{% endif %}" href="{{ url_for('list_billing_infos') }}">Factuurgegevens</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Hero Sectie met achtergrondafbeelding -->
+    <div class="hero d-flex flex-column justify-content-center align-items-center">
+      <h1>Welkom bij Teamwear & Drukwerk</h1>
+      <p class="lead">Uw partner voor hoogwaardige teamkleding en drukwerkoplossingen.</p>
+      <p>Beheer uw klanten, opdrachten en facturatie op één centrale plek.</p>
+      <div class="mt-3">
+        <a class="btn btn-light btn-lg me-2" href="{{ url_for('add_customer') }}" role="button">Nieuwe Klant</a>
+        <a class="btn btn-outline-light btn-lg" href="{{ url_for('list_customers') }}" role="button">Klantenlijst</a>
+      </div>
+    </div>
+    
+    <!-- Over ons-sectie -->
+    <div class="container my-5">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h2>Over Ons</h2>
+          <p>
+            Teamwear & Drukwerk biedt op maat gemaakte oplossingen voor uw teamkleding en bedrijfsdrukwerk. 
+            Wij staan bekend om onze kwaliteit, snelle service en persoonlijke aanpak. Ons systeem helpt u uw klanten en opdrachten efficiënt te beheren, zodat u zich kunt concentreren op groei en innovatie.
+          </p>
+        </div>
+        <div class="col-md-6">
+          <!-- Voorbeeldafbeelding, vervang gerust door je eigen -->
+          <img src="https://via.placeholder.com/600x350" alt="Teamwear & Drukwerk" class="img-fluid rounded">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recente Opdrachten Preview -->
+    <div class="container my-5">
+      <h2>Recente Opdrachten</h2>
+      {% if new_assignments %}
+      <div class="list-group">
+        {% for assignment in new_assignments %}
+        <a href="{{ url_for('edit_assignment', id=assignment.id) }}" class="list-group-item list-group-item-action">
+          <h5 class="mb-1">{{ assignment.title }}</h5>
+          <p class="mb-1">
+            {{ assignment.description[:100] }}
+            {% if assignment.description|length > 100 %}
+            ...
+            {% endif %}
+          </p>
+          <small>Status: {{ assignment.status }} | Klant: {{ assignment.customer.name }}</small>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p>Er zijn nog geen nieuwe opdrachten.</p>
+      {% endif %}
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-primary text-white text-center py-3">
+      <div class="container">
+        <p class="mb-0">&copy; 2025 Teamwear & Drukwerk. Alle rechten voorbehouden.</p>
+      </div>
+    </footer>
+    
+    <!-- Bootstrap JS Bundle met Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
