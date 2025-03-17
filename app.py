@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
-from datetime import datetime  # <-- om deadline te parsen
+from datetime import datetime
+import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -50,26 +51,35 @@ class Assignment(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    
-    # Bestaande kolom status
     status = db.Column(db.String(50), default='Nieuw')
-    
-    # Nieuw: meerdere status-checks in één string (comma separated of iets anders)
     status_opdracht = db.Column(db.String(255), nullable=True)
-    
-    # Nieuw: deadline
     deadline = db.Column(db.Date, nullable=True)
-    
-    # Nieuw: opmerkingen
     opmerkingen = db.Column(db.Text, nullable=True)
-    
-    # Bestaand: optioneel bestand (upload)
     file = db.Column(db.String(200))
+    # Relatie naar dynamische items
+    items = db.relationship('AssignmentItem', backref='assignment', cascade="all, delete-orphan", lazy=True)
 
     def __repr__(self):
         return f'<Assignment {self.title}>'
 
+class AssignmentItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
+    item_type = db.Column(db.String(50), nullable=False)
+    merk = db.Column(db.String(100))
+    artikel_omschrijving = db.Column(db.String(200))
+    file = db.Column(db.String(200))  # Voor de geüploade productafbeelding of bestand
+    # Nieuwe velden:
+    artikelnummer = db.Column(db.String(100))
+    prijs = db.Column(db.String(50))
+    specs = db.Column(db.Text)  # JSON-string met specificatietabelgegevens
+
+    def __repr__(self):
+        return f'<AssignmentItem {self.item_type} - {self.artikel_omschrijving}>'
+
+# ---------------------
 # File upload settings
+# ---------------------
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -94,6 +104,7 @@ def test():
     return "Test route werkt!"
 
 # Klantenroutes
+
 @app.route('/add_customer', methods=['GET', 'POST'])
 def add_customer():
     error = None
@@ -237,52 +248,102 @@ def add_assignment():
     error = None
     customers = Customer.query.all()
     if request.method == 'POST':
-        # 1) Basisvelden
+        # Basisvelden
         customer_id = request.form.get('customer_id')
-        title = request.form.get('title')
-        description = request.form.get('description')
+        title = "Opdracht " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        description = ""
         
-        # 2) De nieuwe velden (deadline, opmerkingen, status_opdracht)
-        deadline_str = request.form.get('deadline')  # "YYYY-MM-DD" uit <input type="date">
+        deadline_str = request.form.get('deadline')
         if deadline_str:
             deadline_dt = datetime.strptime(deadline_str, '%Y-%m-%d').date()
         else:
             deadline_dt = None
         
-        opmerkingen = request.form.get('opmerkingen')
-        status_opdracht = request.form.get('status_opdracht')  # comma separated of 1 string
-
-        # 3) Bestand upload (optioneel)
+        opmerkingen = request.form.get('opmerkingen') or ""
+        status_opdracht = request.form.get('status_opdracht') or ""
+        
         file = request.files.get('file')
         filename = None
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
-        # 4) Maak de nieuwe Assignment aan
         new_assignment = Assignment(
             customer_id=customer_id,
             title=title,
             description=description,
             file=filename,
-            status='Nieuw',  # of vervang 'Nieuw' als je dit niet meer gebruikt
+            status='Nieuw',
             status_opdracht=status_opdracht,
             deadline=deadline_dt,
             opmerkingen=opmerkingen
         )
         db.session.add(new_assignment)
+        db.session.commit()  # Commit zodat new_assignment.id beschikbaar is
+
+        # Verwerk dynamische items
+        item_types = request.form.getlist('item_type[]')
+        item_merks = request.form.getlist('item_merk[]')
+        item_artikelomschrijvingen = request.form.getlist('item_artikelomschrijving[]')
+        item_artikelnummers = request.form.getlist('item_artikelnummer[]')
+        item_prijzen = request.form.getlist('item_prijs[]')
+        # Specificatietabel (veronderstel één rij per product voor dit voorbeeld)
+        spec_maats = request.form.getlist('item_maat[]')
+        spec_aantals = request.form.getlist('item_aantal[]')
+        spec_letters = request.form.getlist('item_letter[]')
+        spec_omschrijvingen = request.form.getlist('item_omschrijving[]')
+        spec_kleuren = request.form.getlist('item_kleur[]')
+        item_files = request.files.getlist('item_file[]')
+        
+        for i in range(len(item_types)):
+            item_filename = None
+            if i < len(item_files):
+                file_field = item_files[i]
+                if file_field and allowed_file(file_field.filename):
+                    item_filename = secure_filename(file_field.filename)
+                    file_field.save(os.path.join(app.config['UPLOAD_FOLDER'], item_filename))
+            # Bouw een JSON-string voor de specificaties (één rij per product)
+            specs = json.dumps({
+                "maat": spec_maats[i] if i < len(spec_maats) else "",
+                "aantal": spec_aantals[i] if i < len(spec_aantals) else "",
+                "letter": spec_letters[i] if i < len(spec_letters) else "",
+                "omschrijving": spec_omschrijvingen[i] if i < len(spec_omschrijvingen) else "",
+                "kleur": spec_kleuren[i] if i < len(spec_kleuren) else ""
+            })
+            new_item = AssignmentItem(
+                assignment_id=new_assignment.id,
+                item_type=item_types[i],
+                merk=item_merks[i],
+                artikel_omschrijving=item_artikelomschrijvingen[i],
+                artikelnummer=item_artikelnummers[i] if i < len(item_artikelnummers) else "",
+                prijs=item_prijzen[i] if i < len(item_prijzen) else "",
+                file=item_filename,
+                specs=specs
+            )
+            db.session.add(new_item)
+        
         db.session.commit()
-        flash('Opdracht succesvol toegevoegd!', 'success')
+        flash('Opdracht en alle items succesvol toegevoegd!', 'success')
         return redirect(url_for('list_assignments'))
     return render_template('add_assignment.html', customers=customers, error=error)
 
 @app.route('/assignments')
 def list_assignments():
     status_filter = request.args.get('status')
+    deadline_filter = request.args.get('deadline')
+    query = Assignment.query
+
     if status_filter:
-        assignments = Assignment.query.filter_by(status=status_filter).all()
-    else:
-        assignments = Assignment.query.all()
+        query = query.filter_by(status=status_filter)
+    
+    if deadline_filter:
+        try:
+            deadline_dt = datetime.strptime(deadline_filter, '%Y-%m-%d').date()
+            query = query.filter(Assignment.deadline == deadline_dt)
+        except ValueError:
+            pass
+
+    assignments = query.all()
     return render_template('assignments.html', assignments=assignments)
 
 @app.route('/edit_assignment/<int:id>', methods=['GET', 'POST'])
@@ -292,13 +353,10 @@ def edit_assignment(id):
     
     if request.method == 'POST':
         assignment.customer_id = request.form.get('customer_id')
-        assignment.title = request.form.get('title')
-        assignment.description = request.form.get('description')
-        
-        # status (bestaande kolom)
+        assignment.title = request.form.get('title') or assignment.title
+        assignment.description = request.form.get('description') or assignment.description
         assignment.status = request.form.get('status')
         
-        # Nieuwe velden
         deadline_str = request.form.get('deadline')
         if deadline_str:
             assignment.deadline = datetime.strptime(deadline_str, '%Y-%m-%d').date()
@@ -308,18 +366,74 @@ def edit_assignment(id):
         assignment.opmerkingen = request.form.get('opmerkingen')
         assignment.status_opdracht = request.form.get('status_opdracht')
         
-        # Bestand upload
         file = request.files.get('file')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             assignment.file = filename
+
+        # Eerst alle bestaande items verwijderen
+        for item in assignment.items:
+            db.session.delete(item)
+        db.session.commit()
+        
+        item_types = request.form.getlist('item_type[]')
+        item_merks = request.form.getlist('item_merk[]')
+        item_artikelomschrijvingen = request.form.getlist('item_artikelomschrijving[]')
+        item_artikelnummers = request.form.getlist('item_artikelnummer[]')
+        item_prijzen = request.form.getlist('item_prijs[]')
+        spec_maats = request.form.getlist('item_maat[]')
+        spec_aantals = request.form.getlist('item_aantal[]')
+        spec_letters = request.form.getlist('item_letter[]')
+        spec_omschrijvingen = request.form.getlist('item_omschrijving[]')
+        spec_kleuren = request.form.getlist('item_kleur[]')
+        item_files = request.files.getlist('item_file[]')
+        
+        for i in range(len(item_types)):
+            item_filename = None
+            if i < len(item_files):
+                file_field = item_files[i]
+                if file_field and allowed_file(file_field.filename):
+                    item_filename = secure_filename(file_field.filename)
+                    file_field.save(os.path.join(app.config['UPLOAD_FOLDER'], item_filename))
+            specs = json.dumps({
+                "maat": spec_maats[i] if i < len(spec_maats) else "",
+                "aantal": spec_aantals[i] if i < len(spec_aantals) else "",
+                "letter": spec_letters[i] if i < len(spec_letters) else "",
+                "omschrijving": spec_omschrijvingen[i] if i < len(spec_omschrijvingen) else "",
+                "kleur": spec_kleuren[i] if i < len(spec_kleuren) else ""
+            })
+            new_item = AssignmentItem(
+                assignment_id=assignment.id,
+                item_type=item_types[i],
+                merk=item_merks[i],
+                artikel_omschrijving=item_artikelomschrijvingen[i],
+                artikelnummer=item_artikelnummers[i] if i < len(item_artikelnummers) else "",
+                prijs=item_prijzen[i] if i < len(item_prijzen) else "",
+                file=item_filename,
+                specs=specs
+            )
+            db.session.add(new_item)
         
         db.session.commit()
-        flash('Opdracht succesvol bijgewerkt!', 'success')
+        flash('Opdracht en alle items succesvol bijgewerkt!', 'success')
         return redirect(url_for('list_assignments'))
     
-    return render_template('edit_assignment.html', assignment=assignment, customers=customers)
+    # Bouw de JSON-string voor de dynamische items, nu inclusief het bestand veld
+    items_data = json.dumps([
+        {
+            'type': item.item_type,
+            'merk': item.merk,
+            'artikelOmschrijving': item.artikel_omschrijving,
+            'artikelnummer': item.artikelnummer,
+            'prijs': item.prijs,
+            'specs': item.specs,
+            'file': item.file  # Bestandsnaam van de geüploade afbeelding/bestand
+        }
+        for item in assignment.items if item.item_type != "[ITEM TYPE]"
+    ])
+    
+    return render_template('add_assignment.html', customers=customers, assignment=assignment, items_data=items_data)
 
 @app.route('/delete_assignment/<int:id>', methods=['POST'])
 def delete_assignment(id):
@@ -395,6 +509,12 @@ def save_billing_info():
         "email": email
     }}
 
+@app.route('/billing_infos/edit/<int:id>', methods=['GET', 'POST'])
+def edit_billing_info(id):
+    # Logica voor bewerken
+    pass
+
+
 # Nieuwe route: zoek in de klanten (dynamisch via AJAX)
 @app.route('/search_customers')
 def search_customers():
@@ -424,8 +544,6 @@ def search_customers():
     return jsonify(customers_data)
 
 if __name__ == '__main__':
-    # LET OP: als je al een bestaande 'database.db' hebt met oude tabellen, wis die dan even
-    # (of hernoem hem), anders krijg je foutmeldingen bij het ontbreken van de nieuwe kolommen.
     with app.app_context():
         db.create_all()
     app.run(debug=True)

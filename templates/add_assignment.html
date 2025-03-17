@@ -2,7 +2,7 @@
 <html lang="nl">
   <head>
     <meta charset="utf-8">
-    <title>Nieuwe Opdracht | Teamwear & Drukwerk</title>
+    <title>{% if assignment %}Bewerk Opdracht{% else %}Nieuwe Opdracht{% endif %} | Teamwear & Drukwerk</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
       /* Algemene styling voor de zoekfunctie */
@@ -152,9 +152,12 @@
     </nav>
 
     <div class="container mt-5 position-relative">
-      <h1>Nieuwe Opdracht</h1>
+      <h1>{% if assignment %}Bewerk Opdracht{% else %}Nieuwe Opdracht{% endif %}</h1>
       <!-- Opslaan knop -->
       <button type="submit" form="editCustomerForm" class="btn btn-primary save-btn">Opslaan</button>
+      
+      <!-- (Optioneel) Verborgen input voor extra verwerking -->
+      <input type="hidden" name="items_data" id="items_data" value="{{ items_data if items_data else '' }}">
 
       <!-- Zoekbalk -->
       <div class="row mb-4">
@@ -169,7 +172,7 @@
 
       <!-- Hoofdblokken -->
       <div class="blocks-section">
-        <form method="post" id="editCustomerForm">
+        <form method="post" id="editCustomerForm" enctype="multipart/form-data">
           <div class="row">
             <!-- Opdrachtgever -->
             <div class="col-md-4 col-divider mb-4">
@@ -178,20 +181,20 @@
                   <h3 class="block-title">Opdrachtgever</h3>
                   <div class="mb-3">
                     <label class="form-label">Naam:</label>
-                    <p id="nameDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="name" name="name">
+                    <p id="nameDisplay" class="form-control-plaintext">{{ assignment.customer.name if assignment and assignment.customer else "" }}</p>
+                    <input type="hidden" id="name" name="name" value="{{ assignment.customer.name if assignment and assignment.customer else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Email:</label>
-                    <p id="emailDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="email" name="email">
+                    <p id="emailDisplay" class="form-control-plaintext">{{ assignment.customer.email if assignment and assignment.customer else "" }}</p>
+                    <input type="hidden" id="email" name="email" value="{{ assignment.customer.email if assignment and assignment.customer else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Telefoonnummer:</label>
-                    <p id="telefoonDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="telefoon" name="telefoon">
+                    <p id="telefoonDisplay" class="form-control-plaintext">{{ assignment.customer.telefoon if assignment and assignment.customer else "" }}</p>
+                    <input type="hidden" id="telefoon" name="telefoon" value="{{ assignment.customer.telefoon if assignment and assignment.customer else "" }}">
                   </div>
-                  <input type="hidden" id="customer_id" name="customer_id">
+                  <input type="hidden" id="customer_id" name="customer_id" value="{{ assignment.customer.id if assignment and assignment.customer else "" }}">
                 </div>
               </div>
             </div>
@@ -203,38 +206,38 @@
                   <h3 class="block-title">Factuurgegevens</h3>
                   <div class="mb-3">
                     <label class="form-label">Naam:</label>
-                    <p id="factuur_naamDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="factuur_naam" name="factuur_naam">
+                    <p id="factuur_naamDisplay" class="form-control-plaintext">{{ assignment.customer.billing_info.name if assignment and assignment.customer and assignment.customer.billing_info else "" }}</p>
+                    <input type="hidden" id="factuur_naam" name="factuur_naam" value="{{ assignment.customer.billing_info.name if assignment and assignment.customer and assignment.customer.billing_info else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Bedrijfsnaam:</label>
-                    <p id="factuur_companynameDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="factuur_companyname" name="factuur_companyname">
+                    <p id="factuur_companynameDisplay" class="form-control-plaintext">{{ assignment.customer.billing_info.companyname if assignment and assignment.customer and assignment.customer.billing_info else "" }}</p>
+                    <input type="hidden" id="factuur_companyname" name="factuur_companyname" value="{{ assignment.customer.billing_info.companyname if assignment and assignment.customer and assignment.customer.billing_info else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Adres:</label>
-                    <p id="factuur_adresDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="factuur_adres" name="factuur_adres">
+                    <p id="factuur_adresDisplay" class="form-control-plaintext">{{ assignment.customer.billing_info.address if assignment and assignment.customer and assignment.customer.billing_info else "" }}</p>
+                    <input type="hidden" id="factuur_adres" name="factuur_adres" value="{{ assignment.customer.billing_info.address if assignment and assignment.customer and assignment.customer.billing_info else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Postcode:</label>
-                    <p id="factuur_postcodeDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="factuur_postcode" name="factuur_postcode">
+                    <p id="factuur_postcodeDisplay" class="form-control-plaintext">{{ assignment.customer.billing_info.postcode if assignment and assignment.customer and assignment.customer.billing_info else "" }}</p>
+                    <input type="hidden" id="factuur_postcode" name="factuur_postcode" value="{{ assignment.customer.billing_info.postcode if assignment and assignment.customer and assignment.customer.billing_info else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Huisnummer:</label>
-                    <p id="factuur_huisnummerDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="factuur_huisnummer" name="factuur_huisnummer">
+                    <p id="factuur_huisnummerDisplay" class="form-control-plaintext">{{ assignment.customer.billing_info.housenumber if assignment and assignment.customer and assignment.customer.billing_info else "" }}</p>
+                    <input type="hidden" id="factuur_huisnummer" name="factuur_huisnummer" value="{{ assignment.customer.billing_info.housenumber if assignment and assignment.customer and assignment.customer.billing_info else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Telefoonnummer:</label>
-                    <p id="factuur_telefoonDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="factuur_telefoon" name="factuur_telefoon">
+                    <p id="factuur_telefoonDisplay" class="form-control-plaintext">{{ assignment.customer.billing_info.phone if assignment and assignment.customer and assignment.customer.billing_info else "" }}</p>
+                    <input type="hidden" id="factuur_telefoon" name="factuur_telefoon" value="{{ assignment.customer.billing_info.phone if assignment and assignment.customer and assignment.customer.billing_info else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">E-mail:</label>
-                    <p id="factuur_emailDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="factuur_email" name="factuur_email">
+                    <p id="factuur_emailDisplay" class="form-control-plaintext">{{ assignment.customer.billing_info.email if assignment and assignment.customer and assignment.customer.billing_info else "" }}</p>
+                    <input type="hidden" id="factuur_email" name="factuur_email" value="{{ assignment.customer.billing_info.email if assignment and assignment.customer and assignment.customer.billing_info else "" }}">
                   </div>
                   <button type="button" class="btn btn-sm btn-link btn-toggle" id="toggleMiddle" style="display:none;">Uitvouw</button>
                 </div>
@@ -248,13 +251,13 @@
                   <h3 class="block-title">Vereniging</h3>
                   <div class="mb-3">
                     <label class="form-label">Vereniging:</label>
-                    <p id="verenigingDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="vereniging" name="vereniging">
+                    <p id="verenigingDisplay" class="form-control-plaintext">{{ assignment.customer.vereniging if assignment and assignment.customer else "" }}</p>
+                    <input type="hidden" id="vereniging" name="vereniging" value="{{ assignment.customer.vereniging if assignment and assignment.customer else "" }}">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Referentie:</label>
-                    <p id="referentieDisplay" class="form-control-plaintext"></p>
-                    <input type="hidden" id="referentie" name="referentie">
+                    <p id="referentieDisplay" class="form-control-plaintext">{{ assignment.customer.referentie if assignment and assignment.customer else "" }}</p>
+                    <input type="hidden" id="referentie" name="referentie" value="{{ assignment.customer.referentie if assignment and assignment.customer else "" }}">
                   </div>
                   <button type="button" class="btn btn-sm btn-link btn-toggle" id="toggleRight" style="display:none;">Uitvouw</button>
                 </div>
@@ -350,8 +353,8 @@
                       </li>
                     </ul>
                   </div>
-                  <div id="selectedStatus" class="mb-3"></div>
-                  <input type="hidden" id="status_opdracht" name="status_opdracht">
+                  <div id="selectedStatus" class="mb-3">{{ assignment.status_opdracht if assignment and assignment.status_opdracht else "" }}</div>
+                  <input type="hidden" id="status_opdracht" name="status_opdracht" value="{{ assignment.status_opdracht if assignment and assignment.status_opdracht else "" }}">
                 </div>
               </div>
             </div>
@@ -362,7 +365,7 @@
                 <div class="card-body">
                   <h3 class="block-title">Deadline</h3>
                   <div class="mb-3">
-                    <input type="date" class="form-control" id="deadline" name="deadline">
+                    <input type="date" class="form-control" id="deadline" name="deadline" value="{{ assignment.deadline.strftime('%Y-%m-%d') if assignment and assignment.deadline else '' }}">
                   </div>
                 </div>
               </div>
@@ -374,7 +377,7 @@
                 <div class="card-body">
                   <h3 class="block-title">Opmerkingen</h3>
                   <div class="mb-3">
-                    <textarea class="form-control" id="opmerkingen" name="opmerkingen" rows="3" placeholder="Voer hier eventuele opmerkingen in"></textarea>
+                    <textarea class="form-control" id="opmerkingen" name="opmerkingen" rows="3" placeholder="Voer hier eventuele opmerkingen in">{{ assignment.opmerkingen if assignment and assignment.opmerkingen else "" }}</textarea>
                   </div>
                 </div>
               </div>
@@ -393,13 +396,15 @@
                 <div class="card shadow-sm my-3">
                   <div class="card-body">
                     <h3 class="block-title">[ITEM TYPE]</h3>
+                    <!-- Hidden input voor het itemtype -->
+                    <input type="hidden" name="item_type[]" value="[ITEM TYPE]">
                     <div class="row">
                       <!-- Kolom 1: Productafbeelding -->
                       <div class="col-md-4">
                         <div class="mb-3">
                           <label class="form-label">Productafbeelding:</label>
                           <div class="d-flex align-items-center">
-                            <input type="file" class="form-control productImageUpload" accept="image/*" style="width: auto; min-width: 160px; margin-right: 10px;">
+                            <input type="file" class="form-control productImageUpload" accept="image/*" style="width: auto; min-width: 160px; margin-right: 10px;" name="item_file[]">
                             <img src="" alt="Preview" class="img-fluid previewImage" style="display:none; max-width:120px;">
                           </div>
                         </div>
@@ -413,15 +418,15 @@
                         <div class="row mb-3">
                           <div class="col-md-6">
                             <label class="form-label">Merk:</label>
-                            <input type="text" class="form-control" placeholder="Merk">
+                            <input type="text" class="form-control" placeholder="Merk" name="item_merk[]">
                             <label class="form-label mt-3">Artikelomschrijving:</label>
-                            <input type="text" class="form-control" placeholder="Artikelomschrijving">
+                            <input type="text" class="form-control" placeholder="Artikelomschrijving" name="item_artikelomschrijving[]">
                           </div>
                           <div class="col-md-6">
                             <label class="form-label">Artikelnummer:</label>
-                            <input type="text" class="form-control" placeholder="Artikelnummer">
+                            <input type="text" class="form-control" placeholder="Artikelnummer" name="item_artikelnummer[]">
                             <label class="form-label mt-3">Prijs:</label>
-                            <input type="text" class="form-control" placeholder="Prijs">
+                            <input type="text" class="form-control" placeholder="Prijs" name="item_prijs[]">
                           </div>
                         </div>
                         <!-- Tabel met specificaties -->
@@ -431,17 +436,17 @@
                               <th class="col-maat">Maat</th>
                               <th class="col-aantal">Aantal</th>
                               <th class="col-letter">Letter</th>
-                              <th class="col-omschrijving">Omschrijving en grootte</th>
+                              <th class="col-omschrijving">Omschrijving</th>
                               <th class="col-kleur">Kleur</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr>
-                              <td><input type="text" class="form-control" placeholder="Bijv. S, M, 152"></td>
-                              <td><input type="number" class="form-control" placeholder="Aantal..."></td>
-                              <td><input type="text" class="form-control" placeholder="Bijv. A"></td>
-                              <td><input type="text" class="form-control" placeholder="Drukwerk omschrijving"></td>
-                              <td><input type="text" class="form-control" placeholder="Kleur"></td>
+                              <td><input type="text" class="form-control" placeholder="Bijv. S, M, 152" name="item_maat[]"></td>
+                              <td><input type="number" class="form-control" placeholder="Aantal..." name="item_aantal[]"></td>
+                              <td><input type="text" class="form-control" placeholder="Bijv. A" name="item_letter[]"></td>
+                              <td><input type="text" class="form-control" placeholder="Drukwerk omschrijving" name="item_omschrijving[]"></td>
+                              <td><input type="text" class="form-control" placeholder="Kleur" name="item_kleur[]"></td>
                             </tr>
                           </tbody>
                         </table>
@@ -545,16 +550,16 @@
           email: {{ customer.email|tojson|safe }},
           telefoon: {{ customer.telefoon|tojson if customer.telefoon else '""'|safe }},
           billing: {
-            name: {{ customer.billing_info.name|tojson if customer.billing_info and customer.billing_info.name else '""'|safe }},
-            companyname: {{ customer.billing_info.companyname|tojson if customer.billing_info and customer.billing_info.companyname else '""'|safe }},
-            address: {{ customer.billing_info.address|tojson if customer.billing_info and customer.billing_info.address else '""'|safe }},
-            postcode: {{ customer.billing_info.postcode|tojson if customer.billing_info and customer.billing_info.postcode else '""'|safe }},
-            housenumber: {{ customer.billing_info.housenumber|tojson if customer.billing_info and customer.billing_info.housenumber else '""'|safe }},
-            phone: {{ customer.billing_info.phone|tojson if customer.billing_info and customer.billing_info.phone else '""'|safe }},
-            email: {{ customer.billing_info.email|tojson if customer.billing_info and customer.billing_info.email else '""'|safe }}
+            name: {{ customer.billing_info.name|tojson|safe if customer.billing_info and customer.billing_info.name else '""'|safe }},
+            companyname: {{ customer.billing_info.companyname|tojson|safe if customer.billing_info and customer.billing_info.companyname else '""'|safe }},
+            address: {{ customer.billing_info.address|tojson|safe if customer.billing_info and customer.billing_info.address else '""'|safe }},
+            postcode: {{ customer.billing_info.postcode|tojson|safe if customer.billing_info and customer.billing_info.postcode else '""'|safe }},
+            housenumber: {{ customer.billing_info.housenumber|tojson|safe if customer.billing_info and customer.billing_info.housenumber else '""'|safe }},
+            phone: {{ customer.billing_info.phone|tojson|safe if customer.billing_info and customer.billing_info.phone else '""'|safe }},
+            email: {{ customer.billing_info.email|tojson|safe if customer.billing_info and customer.billing_info.email else '""'|safe }}
           },
-          vereniging: {{ customer.vereniging|tojson|safe }},
-          referentie: {{ customer.referentie|tojson if customer.referentie else '""'|safe }}
+          vereniging: {{ customer.vereniging|default('')|tojson|safe }},
+          referentie: {{ customer.referentie|default('')|tojson|safe }}
         };
       {% endfor %}
       var customerSearchInput = document.getElementById('customer_search');
@@ -643,17 +648,17 @@
           let newSection;
 
           if (itemType === "voorbeelden") {
-            // Sectie met 3 uploadslots voor voorbeelden
             newSection = document.createElement('div');
             newSection.innerHTML = `
               <div class="card shadow-sm my-3">
                 <div class="card-body">
                   <h3 class="block-title">Voorbeelden</h3>
+                  <input type="hidden" name="item_type[]" value="voorbeelden">
                   <div class="row">
                     <div class="col-md-4">
                       <div class="mb-3">
                         <label class="form-label">Upload voorbeeld 1:</label>
-                        <input type="file" class="form-control exampleUpload" accept="image/*">
+                        <input type="file" class="form-control exampleUpload" accept="image/*" name="item_file[]">
                       </div>
                       <div class="mb-3">
                         <img src="" alt="Voorbeeld 1" class="img-fluid examplePreview" style="display:none; width:100%;">
@@ -665,7 +670,7 @@
                     <div class="col-md-4">
                       <div class="mb-3">
                         <label class="form-label">Upload voorbeeld 2:</label>
-                        <input type="file" class="form-control exampleUpload" accept="image/*">
+                        <input type="file" class="form-control exampleUpload" accept="image/*" name="item_file[]">
                       </div>
                       <div class="mb-3">
                         <img src="" alt="Voorbeeld 2" class="img-fluid examplePreview" style="display:none; width:100%;">
@@ -677,7 +682,7 @@
                     <div class="col-md-4">
                       <div class="mb-3">
                         <label class="form-label">Upload voorbeeld 3:</label>
-                        <input type="file" class="form-control exampleUpload" accept="image/*">
+                        <input type="file" class="form-control exampleUpload" accept="image/*" name="item_file[]">
                       </div>
                       <div class="mb-3">
                         <img src="" alt="Voorbeeld 3" class="img-fluid examplePreview" style="display:none; width:100%;">
@@ -725,18 +730,18 @@
             });
           }
           else if (itemType === "bestanden") {
-            // Sectie met 3 kolommen, elk met 1 uploadslot voor bestanden
             newSection = document.createElement('div');
             newSection.innerHTML = `
               <div class="card shadow-sm my-3">
                 <div class="card-body">
                   <h3 class="block-title">Bestanden</h3>
+                  <input type="hidden" name="item_type[]" value="bestanden">
                   <div class="row">
                     ${[1,2,3].map(col => `
                       <div class="col-md-4">
                         <div class="bestanden-upload-slot">
                           <label class="form-label">Upload bestand ${col}:</label>
-                          <input type="file" class="form-control bestandenUpload" accept=".eps,.cdr,.pdf,image/*">
+                          <input type="file" class="form-control bestandenUpload" accept=".eps,.cdr,.pdf,image/*" name="item_file[]">
                           <div class="mt-2">
                             <a href="#" class="btn btn-sm btn-link downloadLink" style="display:none;" download>Download bestand</a>
                             <button type="button" class="btn btn-sm btn-secondary removeFileBtn" style="display:none;">Verwijder bestand</button>
@@ -784,19 +789,18 @@
             });
           }
           else if (itemType === "overig") {
-            // Specifieke sectie voor "overig": alleen een upload voor productafbeelding en een invulveld "Omschrijving"
             newSection = document.createElement('div');
             newSection.innerHTML = `
               <div class="card shadow-sm my-3">
                 <div class="card-body">
                   <h3 class="block-title">Overig</h3>
+                  <input type="hidden" name="item_type[]" value="overig">
                   <div class="row">
-                    <!-- Kolom 1: Productafbeelding -->
                     <div class="col-md-4">
                       <div class="mb-3">
                         <label class="form-label">Productafbeelding:</label>
                         <div class="d-flex align-items-center">
-                          <input type="file" class="form-control productImageUpload" accept="image/*" style="width: auto; min-width: 160px; margin-right: 10px;">
+                          <input type="file" class="form-control productImageUpload" accept="image/*" style="width: auto; min-width: 160px; margin-right: 10px;" name="item_file[]">
                           <img src="" alt="Preview" class="img-fluid previewImage" style="display:none; max-width:120px;">
                         </div>
                       </div>
@@ -804,11 +808,10 @@
                         <img src="" alt="Standaard afbeelding" class="img-fluid standardImage">
                       </div>
                     </div>
-                    <!-- Kolom 2: Alleen een omschrijving -->
                     <div class="col-md-8">
                       <div class="mb-3">
                         <label class="form-label">Omschrijving:</label>
-                        <input type="text" class="form-control" placeholder="Omschrijving">
+                        <input type="text" class="form-control" placeholder="Omschrijving" name="item_omschrijving[]">
                       </div>
                     </div>
                   </div>
@@ -838,18 +841,16 @@
             });
           }
           else {
-            // Standaard: gebruik de template voor overige itemtypes
             newSection = itemSectionTemplate.cloneNode(true);
             newSection.id = "";
             newSection.style.display = "";
             newSection.querySelector('.block-title').textContent = itemType;
-
+            // Update het hidden input voor het itemtype
+            newSection.querySelector('input[name="item_type[]"]').value = itemType;
             let removeBtn = newSection.querySelector('.removeItemBtn');
             removeBtn.addEventListener('click', function() {
               newSection.remove();
             });
-
-            // Indien nodig standaardafbeelding tonen
             let standardImg = newSection.querySelector('.standardImage');
             if (itemType === "T-shirt") {
               standardImg.src = "/static/uploads/img/shirt_front_and_back.jpg";
@@ -876,8 +877,6 @@
               standardImg.src = "";
               standardImg.style.display = "none";
             }
-
-            // Preview-functionaliteit voor de productafbeelding
             let fileInput = newSection.querySelector('.productImageUpload');
             let previewImg = newSection.querySelector('.previewImage');
             fileInput.addEventListener('change', function(e) {
@@ -894,48 +893,165 @@
                 previewImg.style.display = "none";
               }
             });
-
-            // Extra maatrijen toevoegen
             let addSizeRowBtn = newSection.querySelector('.addSizeRowBtn');
+            if(addSizeRowBtn){
+              let sizeTableBody = newSection.querySelector('.sizeTable tbody');
+              addSizeRowBtn.addEventListener('click', function() {
+                let tr = document.createElement('tr');
+                let tdMaat = document.createElement('td');
+                let inputMaat = document.createElement('input');
+                inputMaat.type = "text";
+                inputMaat.placeholder = "Bijv. S, M, 152...";
+                inputMaat.className = "form-control";
+                inputMaat.name = "item_maat[]";
+                tdMaat.appendChild(inputMaat);
+                let tdAantal = document.createElement('td');
+                let inputAantal = document.createElement('input');
+                inputAantal.type = "number";
+                inputAantal.placeholder = "Aantal...";
+                inputAantal.className = "form-control";
+                inputAantal.name = "item_aantal[]";
+                tdAantal.appendChild(inputAantal);
+                let tdLetter = document.createElement('td');
+                let inputLetter = document.createElement('input');
+                inputLetter.type = "text";
+                inputLetter.placeholder = "Bijv. A";
+                inputLetter.className = "form-control";
+                inputLetter.name = "item_letter[]";
+                tdLetter.appendChild(inputLetter);
+                let tdOmsch = document.createElement('td');
+                let inputOmsch = document.createElement('input');
+                inputOmsch.type = "text";
+                inputOmsch.placeholder = "Drukwerk omschrijving";
+                inputOmsch.className = "form-control";
+                inputOmsch.name = "item_omschrijving[]";
+                tdOmsch.appendChild(inputOmsch);
+                let tdKleur = document.createElement('td');
+                let inputKleur = document.createElement('input');
+                inputKleur.type = "text";
+                inputKleur.placeholder = "Kleur";
+                inputKleur.className = "form-control";
+                inputKleur.name = "item_kleur[]";
+                tdKleur.appendChild(inputKleur);
+                tr.appendChild(tdMaat);
+                tr.appendChild(tdAantal);
+                tr.appendChild(tdLetter);
+                tr.appendChild(tdOmsch);
+                tr.appendChild(tdKleur);
+                sizeTableBody.appendChild(tr);
+              });
+            }
+          }
+          itemsContainer.appendChild(newSection);
+          newSection.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+
+      // E) Laad bestaande dynamische items (indien aanwezig)
+      function loadDynamicItems() {
+        const itemsDataInput = document.getElementById('items_data');
+        if (!itemsDataInput.value) return;
+        let items;
+        try {
+          items = JSON.parse(itemsDataInput.value);
+        } catch(e) {
+          console.error("Invalid items_data JSON", e);
+          return;
+        }
+        items.forEach(function(item) {
+          let newSection;
+          const itemType = item.type;
+          newSection = itemSectionTemplate.cloneNode(true);
+          newSection.id = "";
+          newSection.style.display = "";
+          newSection.querySelector('.block-title').textContent = itemType;
+          newSection.querySelector('input[name="item_type[]"]').value = itemType;
+          let removeBtn = newSection.querySelector('.removeItemBtn');
+          removeBtn.addEventListener('click', function() {
+            newSection.remove();
+          });
+          let standardImg = newSection.querySelector('.standardImage');
+          if (itemType === "T-shirt") {
+            standardImg.src = "/static/uploads/img/shirt_front_and_back.jpg";
+            standardImg.style.display = "block";
+          } else if (itemType === "Trui") {
+            standardImg.src = "/static/uploads/img/shirt_lange_mouwen.jpg";
+            standardImg.style.display = "block";
+          } else if (itemType === "Vest") {
+            standardImg.src = "/static/uploads/img/trui_lange_rits.jpg";
+            standardImg.style.display = "block";
+          } else if (itemType === "Trui korte rits") {
+            standardImg.src = "/static/uploads/img/trui_korte_rits.jpg";
+            standardImg.style.display = "block";
+          } else if (itemType === "Korte broek") {
+            standardImg.src = "/static/uploads/img/korte_broek.jpg";
+            standardImg.style.display = "block";
+          } else if (itemType === "Lange broek") {
+            standardImg.src = "/static/uploads/img/lange_broek.jpg";
+            standardImg.style.display = "block";
+          } else if (itemType === "Tas") {
+            standardImg.src = "/static/uploads/img/voetbal_tas.jpg";
+            standardImg.style.display = "block";
+          } else {
+            standardImg.src = "";
+            standardImg.style.display = "none";
+          }
+          let fileInput = newSection.querySelector('.productImageUpload');
+          let previewImg = newSection.querySelector('.previewImage');
+          fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function(evt) {
+                previewImg.src = evt.target.result;
+                previewImg.style.display = "block";
+              };
+              reader.readAsDataURL(file);
+            } else {
+              previewImg.src = "";
+              previewImg.style.display = "none";
+            }
+          });
+          let addSizeRowBtn = newSection.querySelector('.addSizeRowBtn');
+          if(addSizeRowBtn){
             let sizeTableBody = newSection.querySelector('.sizeTable tbody');
             addSizeRowBtn.addEventListener('click', function() {
               let tr = document.createElement('tr');
-
               let tdMaat = document.createElement('td');
               let inputMaat = document.createElement('input');
               inputMaat.type = "text";
-              inputMaat.placeholder = "Bijv. S, 152...";
+              inputMaat.placeholder = "Bijv. S, M, 152...";
               inputMaat.className = "form-control";
+              inputMaat.name = "item_maat[]";
               tdMaat.appendChild(inputMaat);
-
               let tdAantal = document.createElement('td');
               let inputAantal = document.createElement('input');
               inputAantal.type = "number";
               inputAantal.placeholder = "Aantal...";
               inputAantal.className = "form-control";
+              inputAantal.name = "item_aantal[]";
               tdAantal.appendChild(inputAantal);
-
               let tdLetter = document.createElement('td');
               let inputLetter = document.createElement('input');
               inputLetter.type = "text";
               inputLetter.placeholder = "Bijv. A";
               inputLetter.className = "form-control";
+              inputLetter.name = "item_letter[]";
               tdLetter.appendChild(inputLetter);
-
               let tdOmsch = document.createElement('td');
               let inputOmsch = document.createElement('input');
               inputOmsch.type = "text";
               inputOmsch.placeholder = "Drukwerk omschrijving";
               inputOmsch.className = "form-control";
+              inputOmsch.name = "item_omschrijving[]";
               tdOmsch.appendChild(inputOmsch);
-
               let tdKleur = document.createElement('td');
               let inputKleur = document.createElement('input');
               inputKleur.type = "text";
               inputKleur.placeholder = "Kleur";
               inputKleur.className = "form-control";
+              inputKleur.name = "item_kleur[]";
               tdKleur.appendChild(inputKleur);
-
               tr.appendChild(tdMaat);
               tr.appendChild(tdAantal);
               tr.appendChild(tdLetter);
@@ -944,11 +1060,61 @@
               sizeTableBody.appendChild(tr);
             });
           }
-
+          // Vul de standaardvelden in: merk, artikelomschrijving, artikelnummer, prijs
+          if(item.merk) {
+            let merkInput = newSection.querySelector('input[placeholder="Merk"]');
+            if(merkInput) {
+              merkInput.value = item.merk;
+            }
+          }
+          if(item.artikelOmschrijving) {
+            let artikelInput = newSection.querySelector('input[placeholder="Artikelomschrijving"]');
+            if(artikelInput) {
+              artikelInput.value = item.artikelOmschrijving;
+            }
+          }
+          if(item.artikelnummer) {
+            let artikelnummerInput = newSection.querySelector('input[placeholder="Artikelnummer"]');
+            if(artikelnummerInput) {
+              artikelnummerInput.value = item.artikelnummer;
+            }
+          }
+          if(item.prijs) {
+            let prijsInput = newSection.querySelector('input[placeholder="Prijs"]');
+            if(prijsInput) {
+              prijsInput.value = item.prijs;
+            }
+          }
+          // Vul de specificatietabel in via de JSON "specs"
+          if(item.specs) {
+            try {
+              let specs = JSON.parse(item.specs);
+              // We gaan ervan uit dat er één rij is in de tabel; pas dit aan als meerdere rijen mogelijk zijn.
+              let maatInput = newSection.querySelector('input[name="item_maat[]"]');
+              let aantalInput = newSection.querySelector('input[name="item_aantal[]"]');
+              let letterInput = newSection.querySelector('input[name="item_letter[]"]');
+              let omschrijvingInput = newSection.querySelector('input[name="item_omschrijving[]"]');
+              let kleurInput = newSection.querySelector('input[name="item_kleur[]"]');
+              if(maatInput) maatInput.value = specs.maat || "";
+              if(aantalInput) aantalInput.value = specs.aantal || "";
+              if(letterInput) letterInput.value = specs.letter || "";
+              if(omschrijvingInput) omschrijvingInput.value = specs.omschrijving || "";
+              if(kleurInput) kleurInput.value = specs.kleur || "";
+            } catch(e) {
+              console.error("Error parsing specs JSON", e);
+            }
+          }
+          // Toon preview als er al een bestand is opgeslagen
+          if(item.file) {
+            previewImg.src = '/static/uploads/' + item.file;
+            previewImg.style.display = "block";
+          }
           itemsContainer.appendChild(newSection);
-          newSection.scrollIntoView({ behavior: "smooth" });
         });
-      });
+      }
+
+      // Laad bestaande dynamische items (indien aanwezig)
+      loadDynamicItems();
 
       recalcHeights();
     });
