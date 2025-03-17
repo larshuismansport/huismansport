@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
+from datetime import datetime  # <-- om deadline te parsen
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -49,9 +50,22 @@ class Assignment(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(50), default='Nieuw')
-    file = db.Column(db.String(200))
     
+    # Bestaande kolom status
+    status = db.Column(db.String(50), default='Nieuw')
+    
+    # Nieuw: meerdere status-checks in één string (comma separated of iets anders)
+    status_opdracht = db.Column(db.String(255), nullable=True)
+    
+    # Nieuw: deadline
+    deadline = db.Column(db.Date, nullable=True)
+    
+    # Nieuw: opmerkingen
+    opmerkingen = db.Column(db.Text, nullable=True)
+    
+    # Bestaand: optioneel bestand (upload)
+    file = db.Column(db.String(200))
+
     def __repr__(self):
         return f'<Assignment {self.title}>'
 
@@ -95,7 +109,8 @@ def add_customer():
             selected_verenigingen.append(andere_vereniging)
         vereniging_str = ','.join(selected_verenigingen) if selected_verenigingen else None
         
-        new_customer = Customer(name=name, email=email, telefoon=telefoon, vereniging=vereniging_str, referentie=referentie)
+        new_customer = Customer(name=name, email=email, telefoon=telefoon,
+                                vereniging=vereniging_str, referentie=referentie)
         db.session.add(new_customer)
         db.session.commit()
         
@@ -213,27 +228,47 @@ def delete_customer(id):
     flash('Klant succesvol verwijderd!', 'success')
     return redirect(url_for('list_customers'))
 
+# ---------------------
 # Opdrachtenroutes
+# ---------------------
+
 @app.route('/add_assignment', methods=['GET', 'POST'])
 def add_assignment():
     error = None
-    # Haal alle klanten op zodat je in de template de zoekfunctie kunt gebruiken
     customers = Customer.query.all()
     if request.method == 'POST':
+        # 1) Basisvelden
         customer_id = request.form.get('customer_id')
         title = request.form.get('title')
         description = request.form.get('description')
+        
+        # 2) De nieuwe velden (deadline, opmerkingen, status_opdracht)
+        deadline_str = request.form.get('deadline')  # "YYYY-MM-DD" uit <input type="date">
+        if deadline_str:
+            deadline_dt = datetime.strptime(deadline_str, '%Y-%m-%d').date()
+        else:
+            deadline_dt = None
+        
+        opmerkingen = request.form.get('opmerkingen')
+        status_opdracht = request.form.get('status_opdracht')  # comma separated of 1 string
+
+        # 3) Bestand upload (optioneel)
         file = request.files.get('file')
         filename = None
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        # 4) Maak de nieuwe Assignment aan
         new_assignment = Assignment(
             customer_id=customer_id,
             title=title,
             description=description,
             file=filename,
-            status='Nieuw'
+            status='Nieuw',  # of vervang 'Nieuw' als je dit niet meer gebruikt
+            status_opdracht=status_opdracht,
+            deadline=deadline_dt,
+            opmerkingen=opmerkingen
         )
         db.session.add(new_assignment)
         db.session.commit()
@@ -254,19 +289,36 @@ def list_assignments():
 def edit_assignment(id):
     assignment = Assignment.query.get_or_404(id)
     customers = Customer.query.all()
+    
     if request.method == 'POST':
         assignment.customer_id = request.form.get('customer_id')
         assignment.title = request.form.get('title')
         assignment.description = request.form.get('description')
+        
+        # status (bestaande kolom)
         assignment.status = request.form.get('status')
+        
+        # Nieuwe velden
+        deadline_str = request.form.get('deadline')
+        if deadline_str:
+            assignment.deadline = datetime.strptime(deadline_str, '%Y-%m-%d').date()
+        else:
+            assignment.deadline = None
+        
+        assignment.opmerkingen = request.form.get('opmerkingen')
+        assignment.status_opdracht = request.form.get('status_opdracht')
+        
+        # Bestand upload
         file = request.files.get('file')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             assignment.file = filename
+        
         db.session.commit()
         flash('Opdracht succesvol bijgewerkt!', 'success')
         return redirect(url_for('list_assignments'))
+    
     return render_template('edit_assignment.html', assignment=assignment, customers=customers)
 
 @app.route('/delete_assignment/<int:id>', methods=['POST'])
@@ -276,6 +328,10 @@ def delete_assignment(id):
     db.session.commit()
     flash('Opdracht succesvol verwijderd!', 'success')
     return redirect(url_for('list_assignments'))
+
+# ---------------------
+# Factuurgegevens
+# ---------------------
 
 @app.route('/billing_infos')
 def list_billing_infos():
@@ -368,6 +424,8 @@ def search_customers():
     return jsonify(customers_data)
 
 if __name__ == '__main__':
+    # LET OP: als je al een bestaande 'database.db' hebt met oude tabellen, wis die dan even
+    # (of hernoem hem), anders krijg je foutmeldingen bij het ontbreken van de nieuwe kolommen.
     with app.app_context():
         db.create_all()
     app.run(debug=True)

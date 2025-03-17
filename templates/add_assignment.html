@@ -26,24 +26,21 @@
       .position-relative {
         position: relative;
       }
-
       /* Klein lettertype */
       body, .form-label, p {
         font-size: 0.9rem;
       }
-
       /* Container en blokken */
       .blocks-section {
         background-color: white;
         padding: 2rem;
       }
-
       /* Card styling */
       .card {
         border: none;
       }
       .card-body {
-        background-color: #f7f7f7; /* Licht grijzige achtergrond */
+        background-color: #f7f7f7;
         padding: 1rem;
         overflow: hidden;
         position: relative;
@@ -51,14 +48,12 @@
       .card-body .mb-3 {
         margin-bottom: 0.75rem;
       }
-
       /* Bloktitels in hoofdletters */
       .block-title {
         text-transform: uppercase;
         font-weight: 600;
         margin-bottom: 1rem;
       }
-
       /* Scheidingslijn tussen kolommen */
       .col-divider {
         border-right: 1px solid #ddd;
@@ -66,7 +61,6 @@
       .col-divider:last-child {
         border-right: none;
       }
-
       /* Statische data weergave */
       .form-control-plaintext {
         padding: .375rem .75rem;
@@ -77,7 +71,6 @@
         border: 1px solid #ced4da;
         border-radius: .25rem;
       }
-
       /* Opslaan knop rechtsboven */
       .save-btn {
         position: absolute;
@@ -85,14 +78,12 @@
         right: 1rem;
         z-index: 1050;
       }
-
       /* Toggle-knoppen (klein) */
       .btn-toggle {
         position: absolute;
         right: 0.5rem;
         bottom: 0.5rem;
       }
-
       /* Extra blokken: vergrote min-height en geen overflow hidden */
       .extra-block .card-body {
         background-color: #f7f7f7;
@@ -100,7 +91,6 @@
         min-height: 180px;
         overflow: visible;
       }
-
       /* Styling voor de status-checklist dropdown */
       .dropdown-menu {
         max-height: 200px;
@@ -110,38 +100,38 @@
         font-size: 0.85rem;
         color: #555;
       }
-
-      /* Grotere breedte voor de T-shirt afbeelding */
+      /* Voor standaard producten (bijv. T-shirt) */
       .standardImage {
         max-width: 100%;
-        display: none; /* standaard verborgen (alleen T-shirt) */
+        width: 100%;
+        display: none;
         margin-top: 1rem;
       }
-
-      /* Tabelkolommen voor maat, aantal, drukwerk letter, omschrijving, kleur */
+      /* Tabelkolommen voor specificaties */
       .sizeTable th,
       .sizeTable td {
         vertical-align: middle;
       }
-      /* Maak de eerste drie kolommen smaller */
       .col-maat,
       .col-aantal,
       .col-letter {
         width: 10%;
         min-width: 70px;
       }
-      /* Maak omschrijving en kleur wat breder */
       .col-omschrijving {
         width: 40%;
       }
       .col-kleur {
         width: 20%;
       }
+      /* Bestanden-upload slot styling */
+      .bestanden-upload-slot {
+        margin-bottom: 1rem;
+      }
     </style>
   </head>
   <body>
-
-    <!-- Navigatiebalk (voorbeeld) -->
+    <!-- Navigatiebalk -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container">
         <a class="navbar-brand" href="{{ url_for('index') }}">Teamwear & Drukwerk</a>
@@ -163,10 +153,10 @@
 
     <div class="container mt-5 position-relative">
       <h1>Nieuwe Opdracht</h1>
-      <!-- Opslaan knop rechtsboven -->
+      <!-- Opslaan knop -->
       <button type="submit" form="editCustomerForm" class="btn btn-primary save-btn">Opslaan</button>
 
-      <!-- Zoekbalk om klant te selecteren -->
+      <!-- Zoekbalk -->
       <div class="row mb-4">
         <div class="col-12">
           <div class="mb-3 position-relative">
@@ -177,11 +167,11 @@
         </div>
       </div>
 
-      <!-- Hoofdblokken (drie kolommen) -->
+      <!-- Hoofdblokken -->
       <div class="blocks-section">
         <form method="post" id="editCustomerForm">
           <div class="row">
-            <!-- Linker blok: Opdrachtgever -->
+            <!-- Opdrachtgever -->
             <div class="col-md-4 col-divider mb-4">
               <div class="card shadow-sm">
                 <div class="card-body" id="leftBlockContent">
@@ -206,7 +196,7 @@
               </div>
             </div>
 
-            <!-- Middelste blok: Factuurgegevens -->
+            <!-- Factuurgegevens -->
             <div class="col-md-4 col-divider mb-4">
               <div class="card shadow-sm">
                 <div class="card-body" id="middleBlockContent">
@@ -251,7 +241,7 @@
               </div>
             </div>
 
-            <!-- Rechter blok: Vereniging -->
+            <!-- Vereniging -->
             <div class="col-md-4 mb-4">
               <div class="card shadow-sm">
                 <div class="card-body" id="rightBlockContent">
@@ -274,7 +264,7 @@
 
           <!-- Extra rij met vrije invulvelden -->
           <div class="row">
-            <!-- Extra blok links: Status opdracht (met multi-select checklist) -->
+            <!-- Status opdracht -->
             <div class="col-md-4 col-divider mb-4 extra-block">
               <div class="card shadow-sm">
                 <div class="card-body">
@@ -302,7 +292,6 @@
                           <label class="form-check-label" for="status3">order compleet</label>
                         </div>
                       </li>
-                      <!-- lege regel ter visuele scheiding -->
                       <li><hr class="dropdown-divider"></li>
                       <li class="px-3">
                         <div class="form-check">
@@ -367,7 +356,7 @@
               </div>
             </div>
 
-            <!-- Extra blok midden: Deadline -->
+            <!-- Deadline -->
             <div class="col-md-4 col-divider mb-4 extra-block">
               <div class="card shadow-sm">
                 <div class="card-body">
@@ -379,7 +368,7 @@
               </div>
             </div>
 
-            <!-- Extra blok rechts: Opmerkingen -->
+            <!-- Opmerkingen -->
             <div class="col-md-4 mb-4 extra-block">
               <div class="card shadow-sm">
                 <div class="card-body">
@@ -392,7 +381,6 @@
             </div>
           </div>
 
-
           <!-- DYNAMISCHE SECTIES (PRODUCTEN) -->
           <div class="row">
             <div class="col-12">
@@ -401,58 +389,53 @@
 
               <!-- Template (verborgen) voor een nieuwe sectie -->
               <div id="itemSectionTemplate" style="display: none;">
+                <!-- Deze template wordt gebruikt voor alle itemtypes behalve "voorbeelden", "bestanden" en "overig" -->
                 <div class="card shadow-sm my-3">
                   <div class="card-body">
                     <h3 class="block-title">[ITEM TYPE]</h3>
-                    
-                    <!-- Bovenste rij met merk, artikelnummer, artikelomschrijving -->
-                    <div class="row mb-3">
-                      <div class="col-md-4">
-                        <label class="form-label">Merk:</label>
-                        <input type="text" class="form-control productMerk">
-                      </div>
-                      <div class="col-md-4">
-                        <label class="form-label">Artikelnummer:</label>
-                        <input type="text" class="form-control productArtikelnummer">
-                      </div>
-                      <div class="col-md-4">
-                        <label class="form-label">Artikelomschrijving:</label>
-                        <input type="text" class="form-control productArtikelOmschrijving">
-                      </div>
-                    </div>
-
                     <div class="row">
-                      <!-- Linkerkolom: file upload + geüploade preview + standaardafbeelding (alleen bij T-shirt) -->
+                      <!-- Kolom 1: Productafbeelding -->
                       <div class="col-md-4">
-                        <!-- File upload -->
                         <div class="mb-3">
                           <label class="form-label">Productafbeelding:</label>
-                          <input type="file" class="form-control productImageUpload" accept="image/*">
+                          <div class="d-flex align-items-center">
+                            <input type="file" class="form-control productImageUpload" accept="image/*" style="width: auto; min-width: 160px; margin-right: 10px;">
+                            <img src="" alt="Preview" class="img-fluid previewImage" style="display:none; max-width:120px;">
+                          </div>
                         </div>
-                        <!-- Preview van geüploade afbeelding (standaard verborgen) -->
-                        <div class="mb-3">
-                          <img src="" alt="Preview" class="img-fluid previewImage" style="display:none; max-width:120px;">
-                        </div>
-                        <!-- Standaardafbeelding voor T-shirt (verborgen totdat itemType=='T-shirt') -->
                         <div>
-                          <img src="" alt="Shirt Layout" class="img-fluid standardImage">
+                          <img src="" alt="Standaard afbeelding" class="img-fluid standardImage">
                         </div>
                       </div>
-
-                      <!-- Rechterkolom: tabel met Maat + Aantal + Drukwerk letter + Omschrijving + Kleur -->
+                      <!-- Kolom 2: Gegevens en specificaties -->
                       <div class="col-md-8">
+                        <!-- Gegevens boven de tabel (alleen binnen deze kolom) -->
+                        <div class="row mb-3">
+                          <div class="col-md-6">
+                            <label class="form-label">Merk:</label>
+                            <input type="text" class="form-control" placeholder="Merk">
+                            <label class="form-label mt-3">Artikelomschrijving:</label>
+                            <input type="text" class="form-control" placeholder="Artikelomschrijving">
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label">Artikelnummer:</label>
+                            <input type="text" class="form-control" placeholder="Artikelnummer">
+                            <label class="form-label mt-3">Prijs:</label>
+                            <input type="text" class="form-control" placeholder="Prijs">
+                          </div>
+                        </div>
+                        <!-- Tabel met specificaties -->
                         <table class="table table-bordered align-middle mb-3 sizeTable">
                           <thead>
                             <tr>
                               <th class="col-maat">Maat</th>
                               <th class="col-aantal">Aantal</th>
                               <th class="col-letter">Letter</th>
-                              <th class="col-omschrijving">Omschrijving</th>
+                              <th class="col-omschrijving">Omschrijving en grootte</th>
                               <th class="col-kleur">Kleur</th>
                             </tr>
                           </thead>
                           <tbody>
-                            <!-- Eén start-rij -->
                             <tr>
                               <td><input type="text" class="form-control" placeholder="Bijv. S, M, 152"></td>
                               <td><input type="number" class="form-control" placeholder="Aantal..."></td>
@@ -465,17 +448,14 @@
                         <button type="button" class="btn btn-sm btn-secondary addSizeRowBtn">+ Maat toevoegen</button>
                       </div>
                     </div>
-                    <!-- Verwijder-knop -->
                     <div class="text-end mt-3">
-                      <button type="button" class="btn btn-sm btn-danger removeItemBtn">
-                        Verwijder sectie
-                      </button>
+                      <button type="button" class="btn btn-sm btn-danger removeItemBtn">Verwijder sectie</button>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Plusknop met dropdown om items toe te voegen -->
+              <!-- Plusknop met dropdown -->
               <div class="dropdown my-3">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="addNewItemBtn" data-bs-toggle="dropdown" aria-expanded="false">
                   + Item toevoegen
@@ -484,6 +464,7 @@
                   <li><a class="dropdown-item" href="#" data-itemtype="T-shirt">T-shirt</a></li>
                   <li><a class="dropdown-item" href="#" data-itemtype="Trui">Trui</a></li>
                   <li><a class="dropdown-item" href="#" data-itemtype="Vest">Vest</a></li>
+                  <li><a class="dropdown-item" href="#" data-itemtype="Trui korte rits">Trui korte rits</a></li>
                   <li><a class="dropdown-item" href="#" data-itemtype="Korte broek">Korte broek</a></li>
                   <li><a class="dropdown-item" href="#" data-itemtype="Lange broek">Lange broek</a></li>
                   <li><a class="dropdown-item" href="#" data-itemtype="Tas">Tas</a></li>
@@ -499,28 +480,20 @@
       </div>
     </div>
 
-    <!-- Bootstrap JS-bundel -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Script: alles binnen DOMContentLoaded -->
+    <!-- Script -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-
-      // ---------------------------------------
-      // A) Hoogte / Uitvouwen van de blokken
-      // ---------------------------------------
+      // A) Hoogte/Uitvouwen van blokken
       function recalcHeights() {
         var leftBlock = document.getElementById('leftBlockContent');
         if (!leftBlock) return;
-
         var middleBlock = document.getElementById('middleBlockContent');
         var rightBlock = document.getElementById('rightBlockContent');
         var leftHeight = leftBlock.offsetHeight;
-
         middleBlock.style.height = leftHeight + 'px';
         rightBlock.style.height = leftHeight + 'px';
-        
-        // Toggleknoppen alleen tonen als er scrollheight is
         if (middleBlock.scrollHeight > leftHeight) {
           document.getElementById('toggleMiddle').style.display = 'block';
           document.getElementById('toggleMiddle').textContent = 'Uitvouw';
@@ -535,7 +508,6 @@
         }
       }
       window.addEventListener('resize', recalcHeights);
-
       let toggleMiddle = document.getElementById('toggleMiddle');
       if (toggleMiddle) {
         toggleMiddle.addEventListener('click', function() {
@@ -549,7 +521,6 @@
           }
         });
       }
-      
       let toggleRight = document.getElementById('toggleRight');
       if (toggleRight) {
         toggleRight.addEventListener('click', function() {
@@ -564,34 +535,30 @@
         });
       }
 
-      // ---------------------------------------
-      // B) Klant zoeken (eventlisteners)
-      // ---------------------------------------
+      // B) Klant zoeken
       var customerInfos = {};
       {% for customer in customers %}
         {% set search_key = customer.name ~ " - " ~ customer.email ~ " - " ~ (customer.vereniging or "") ~ " - " ~ (customer.referentie or "") ~ " - " ~ (customer.billing_info.companyname if customer.billing_info and customer.billing_info.companyname else "") %}
-        customerInfos["{{ search_key }}"] = {
-          id: "{{ customer.id }}",
-          name: {{ customer.name|tojson }},
-          email: {{ customer.email|tojson }},
-          telefoon: {{ customer.telefoon|tojson if customer.telefoon else '""' }},
+        customerInfos[{{ search_key|tojson|safe }}] = {
+          id: {{ customer.id|tojson|safe }},
+          name: {{ customer.name|tojson|safe }},
+          email: {{ customer.email|tojson|safe }},
+          telefoon: {{ customer.telefoon|tojson if customer.telefoon else '""'|safe }},
           billing: {
-            name: {{ customer.billing_info.name|tojson if customer.billing_info and customer.billing_info.name else '""' }},
-            companyname: {{ customer.billing_info.companyname|tojson if customer.billing_info and customer.billing_info.companyname else '""' }},
-            address: {{ customer.billing_info.address|tojson if customer.billing_info and customer.billing_info.address else '""' }},
-            postcode: {{ customer.billing_info.postcode|tojson if customer.billing_info and customer.billing_info.postcode else '""' }},
-            housenumber: {{ customer.billing_info.housenumber|tojson if customer.billing_info and customer.billing_info.housenumber else '""' }},
-            phone: {{ customer.billing_info.phone|tojson if customer.billing_info and customer.billing_info.phone else '""' }},
-            email: {{ customer.billing_info.email|tojson if customer.billing_info and customer.billing_info.email else '""' }}
+            name: {{ customer.billing_info.name|tojson if customer.billing_info and customer.billing_info.name else '""'|safe }},
+            companyname: {{ customer.billing_info.companyname|tojson if customer.billing_info and customer.billing_info.companyname else '""'|safe }},
+            address: {{ customer.billing_info.address|tojson if customer.billing_info and customer.billing_info.address else '""'|safe }},
+            postcode: {{ customer.billing_info.postcode|tojson if customer.billing_info and customer.billing_info.postcode else '""'|safe }},
+            housenumber: {{ customer.billing_info.housenumber|tojson if customer.billing_info and customer.billing_info.housenumber else '""'|safe }},
+            phone: {{ customer.billing_info.phone|tojson if customer.billing_info and customer.billing_info.phone else '""'|safe }},
+            email: {{ customer.billing_info.email|tojson if customer.billing_info and customer.billing_info.email else '""'|safe }}
           },
-          vereniging: {{ customer.vereniging|tojson }},
-          referentie: {{ customer.referentie|tojson if customer.referentie else '""' }}
+          vereniging: {{ customer.vereniging|tojson|safe }},
+          referentie: {{ customer.referentie|tojson if customer.referentie else '""'|safe }}
         };
       {% endfor %}
-      
       var customerSearchInput = document.getElementById('customer_search');
       var customerSuggestions = document.getElementById('customerSuggestions');
-
       if (customerSearchInput) {
         customerSearchInput.addEventListener('input', function() {
           var query = this.value.toLowerCase();
@@ -615,7 +582,6 @@
               div.addEventListener('click', function() {
                 customerSearchInput.value = match;
                 var info = customerInfos[match];
-                // Opdrachtgever
                 document.getElementById('nameDisplay').textContent = info.name;
                 document.getElementById('name').value = info.name;
                 document.getElementById('emailDisplay').textContent = info.email;
@@ -623,7 +589,6 @@
                 document.getElementById('telefoonDisplay').textContent = info.telefoon;
                 document.getElementById('telefoon').value = info.telefoon;
                 document.getElementById('customer_id').value = info.id;
-                // Factuurgegevens
                 document.getElementById('factuur_naamDisplay').textContent = info.billing.name;
                 document.getElementById('factuur_naam').value = info.billing.name;
                 document.getElementById('factuur_companynameDisplay').textContent = info.billing.companyname;
@@ -638,12 +603,10 @@
                 document.getElementById('factuur_telefoon').value = info.billing.phone;
                 document.getElementById('factuur_emailDisplay').textContent = info.billing.email;
                 document.getElementById('factuur_email').value = info.billing.email;
-                // Vereniging
                 document.getElementById('verenigingDisplay').textContent = info.vereniging;
                 document.getElementById('vereniging').value = info.vereniging;
                 document.getElementById('referentieDisplay').textContent = info.referentie;
                 document.getElementById('referentie').value = info.referentie;
-                
                 customerSuggestions.style.display = 'none';
                 recalcHeights();
               });
@@ -655,9 +618,7 @@
         });
       }
 
-      // ---------------------------------------
       // C) Status-checklist dropdown
-      // ---------------------------------------
       let statusCheckboxes = document.querySelectorAll('.status-option');
       statusCheckboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
@@ -670,9 +631,7 @@
         });
       });
 
-      // ---------------------------------------
       // D) Dynamische secties (items)
-      // ---------------------------------------
       const itemsContainer = document.getElementById('itemsContainer');
       const itemSectionTemplate = document.getElementById('itemSectionTemplate');
       const itemOptionsMenu = document.getElementById('itemOptionsMenu');
@@ -680,118 +639,317 @@
       itemOptionsMenu.querySelectorAll('a.dropdown-item').forEach(function(menuItem) {
         menuItem.addEventListener('click', function(event) {
           event.preventDefault();
-
-          // Haal gekozen type op (T-shirt, Trui, enz.)
           const itemType = this.getAttribute('data-itemtype');
+          let newSection;
 
-          // Template klonen
-          let newSection = itemSectionTemplate.cloneNode(true);
-          newSection.id = "";
-          newSection.style.display = "";
+          if (itemType === "voorbeelden") {
+            // Sectie met 3 uploadslots voor voorbeelden
+            newSection = document.createElement('div');
+            newSection.innerHTML = `
+              <div class="card shadow-sm my-3">
+                <div class="card-body">
+                  <h3 class="block-title">Voorbeelden</h3>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">Upload voorbeeld 1:</label>
+                        <input type="file" class="form-control exampleUpload" accept="image/*">
+                      </div>
+                      <div class="mb-3">
+                        <img src="" alt="Voorbeeld 1" class="img-fluid examplePreview" style="display:none; width:100%;">
+                      </div>
+                      <div class="mb-3">
+                        <button type="button" class="btn btn-sm btn-secondary removePhotoBtn">Verwijder foto</button>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">Upload voorbeeld 2:</label>
+                        <input type="file" class="form-control exampleUpload" accept="image/*">
+                      </div>
+                      <div class="mb-3">
+                        <img src="" alt="Voorbeeld 2" class="img-fluid examplePreview" style="display:none; width:100%;">
+                      </div>
+                      <div class="mb-3">
+                        <button type="button" class="btn btn-sm btn-secondary removePhotoBtn">Verwijder foto</button>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">Upload voorbeeld 3:</label>
+                        <input type="file" class="form-control exampleUpload" accept="image/*">
+                      </div>
+                      <div class="mb-3">
+                        <img src="" alt="Voorbeeld 3" class="img-fluid examplePreview" style="display:none; width:100%;">
+                      </div>
+                      <div class="mb-3">
+                        <button type="button" class="btn btn-sm btn-secondary removePhotoBtn">Verwijder foto</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-end mt-3">
+                    <button type="button" class="btn btn-sm btn-danger removeItemBtn">Verwijder sectie</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            newSection.querySelector('.removeItemBtn').addEventListener('click', function() {
+              newSection.remove();
+            });
+            newSection.querySelectorAll('.exampleUpload').forEach(function(input) {
+              let preview = input.closest('.col-md-4').querySelector('.examplePreview');
+              input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = function(evt) {
+                    preview.src = evt.target.result;
+                    preview.style.display = "block";
+                  };
+                  reader.readAsDataURL(file);
+                } else {
+                  preview.src = "";
+                  preview.style.display = "none";
+                }
+              });
+            });
+            newSection.querySelectorAll('.removePhotoBtn').forEach(function(btn) {
+              btn.addEventListener('click', function(e) {
+                let col = e.target.closest('.col-md-4');
+                let fileInput = col.querySelector('.exampleUpload');
+                let preview = col.querySelector('.examplePreview');
+                fileInput.value = "";
+                preview.src = "";
+                preview.style.display = "none";
+              });
+            });
+          }
+          else if (itemType === "bestanden") {
+            // Sectie met 3 kolommen, elk met 1 uploadslot voor bestanden
+            newSection = document.createElement('div');
+            newSection.innerHTML = `
+              <div class="card shadow-sm my-3">
+                <div class="card-body">
+                  <h3 class="block-title">Bestanden</h3>
+                  <div class="row">
+                    ${[1,2,3].map(col => `
+                      <div class="col-md-4">
+                        <div class="bestanden-upload-slot">
+                          <label class="form-label">Upload bestand ${col}:</label>
+                          <input type="file" class="form-control bestandenUpload" accept=".eps,.cdr,.pdf,image/*">
+                          <div class="mt-2">
+                            <a href="#" class="btn btn-sm btn-link downloadLink" style="display:none;" download>Download bestand</a>
+                            <button type="button" class="btn btn-sm btn-secondary removeFileBtn" style="display:none;">Verwijder bestand</button>
+                          </div>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                  <div class="text-end mt-3">
+                    <button type="button" class="btn btn-sm btn-danger removeItemBtn">Verwijder sectie</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            newSection.querySelector('.removeItemBtn').addEventListener('click', function() {
+              newSection.remove();
+            });
+            newSection.querySelectorAll('.bestandenUpload').forEach(function(input) {
+              let parentSlot = input.closest('.bestanden-upload-slot');
+              let downloadLink = parentSlot.querySelector('.downloadLink');
+              let removeBtn = parentSlot.querySelector('.removeFileBtn');
+              input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                  const url = URL.createObjectURL(file);
+                  downloadLink.href = url;
+                  downloadLink.textContent = file.name;
+                  downloadLink.style.display = "inline-block";
+                  removeBtn.style.display = "inline-block";
+                } else {
+                  downloadLink.href = "#";
+                  downloadLink.style.display = "none";
+                  removeBtn.style.display = "none";
+                }
+              });
+              removeBtn.addEventListener('click', function() {
+                if(downloadLink.href && downloadLink.href !== "#") {
+                  URL.revokeObjectURL(downloadLink.href);
+                }
+                input.value = "";
+                downloadLink.href = "#";
+                downloadLink.style.display = "none";
+                removeBtn.style.display = "none";
+              });
+            });
+          }
+          else if (itemType === "overig") {
+            // Specifieke sectie voor "overig": alleen een upload voor productafbeelding en een invulveld "Omschrijving"
+            newSection = document.createElement('div');
+            newSection.innerHTML = `
+              <div class="card shadow-sm my-3">
+                <div class="card-body">
+                  <h3 class="block-title">Overig</h3>
+                  <div class="row">
+                    <!-- Kolom 1: Productafbeelding -->
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">Productafbeelding:</label>
+                        <div class="d-flex align-items-center">
+                          <input type="file" class="form-control productImageUpload" accept="image/*" style="width: auto; min-width: 160px; margin-right: 10px;">
+                          <img src="" alt="Preview" class="img-fluid previewImage" style="display:none; max-width:120px;">
+                        </div>
+                      </div>
+                      <div>
+                        <img src="" alt="Standaard afbeelding" class="img-fluid standardImage">
+                      </div>
+                    </div>
+                    <!-- Kolom 2: Alleen een omschrijving -->
+                    <div class="col-md-8">
+                      <div class="mb-3">
+                        <label class="form-label">Omschrijving:</label>
+                        <input type="text" class="form-control" placeholder="Omschrijving">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-end mt-3">
+                    <button type="button" class="btn btn-sm btn-danger removeItemBtn">Verwijder sectie</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            newSection.querySelector('.removeItemBtn').addEventListener('click', function() {
+              newSection.remove();
+            });
+            newSection.querySelector('.productImageUpload').addEventListener('change', function(e) {
+              const file = e.target.files[0];
+              let previewImg = newSection.querySelector('.previewImage');
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                  previewImg.src = evt.target.result;
+                  previewImg.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+              } else {
+                previewImg.src = "";
+                previewImg.style.display = "none";
+              }
+            });
+          }
+          else {
+            // Standaard: gebruik de template voor overige itemtypes
+            newSection = itemSectionTemplate.cloneNode(true);
+            newSection.id = "";
+            newSection.style.display = "";
+            newSection.querySelector('.block-title').textContent = itemType;
 
-          // Titeltekst aanpassen
-          newSection.querySelector('.block-title').textContent = itemType;
+            let removeBtn = newSection.querySelector('.removeItemBtn');
+            removeBtn.addEventListener('click', function() {
+              newSection.remove();
+            });
 
-          // Verwijderknop
-          let removeBtn = newSection.querySelector('.removeItemBtn');
-          removeBtn.addEventListener('click', function() {
-            newSection.remove();
-          });
+            // Indien nodig standaardafbeelding tonen
+            let standardImg = newSection.querySelector('.standardImage');
+            if (itemType === "T-shirt") {
+              standardImg.src = "/static/uploads/img/shirt_front_and_back.jpg";
+              standardImg.style.display = "block";
+            } else if (itemType === "Trui") {
+              standardImg.src = "/static/uploads/img/shirt_lange_mouwen.jpg";
+              standardImg.style.display = "block";
+            } else if (itemType === "Vest") {
+              standardImg.src = "/static/uploads/img/trui_lange_rits.jpg";
+              standardImg.style.display = "block";
+            } else if (itemType === "Trui korte rits") {
+              standardImg.src = "/static/uploads/img/trui_korte_rits.jpg";
+              standardImg.style.display = "block";
+            } else if (itemType === "Korte broek") {
+              standardImg.src = "/static/uploads/img/korte_broek.jpg";
+              standardImg.style.display = "block";
+            } else if (itemType === "Lange broek") {
+              standardImg.src = "/static/uploads/img/lange_broek.jpg";
+              standardImg.style.display = "block";
+            } else if (itemType === "Tas") {
+              standardImg.src = "/static/uploads/img/voetbal_tas.jpg";
+              standardImg.style.display = "block";
+            } else {
+              standardImg.src = "";
+              standardImg.style.display = "none";
+            }
 
-          // Als itemType == "T-shirt" -> toon jouw vaste afbeelding
-          // LET OP dat het pad klopt (waar staat jouw shirt_front_and_back.jpg?)
-          // Bijvoorbeeld:
-          let standardImg = newSection.querySelector('.standardImage');
-          if (itemType === "T-shirt") {
-            standardImg.src = "/static/uploads/img/shirt_front_and_back.jpg";
-            standardImg.style.display = "block";
-          } else {
-            // Voor andere items leeg laten/verbergen
-            standardImg.src = "";
-            standardImg.style.display = "none";
+            // Preview-functionaliteit voor de productafbeelding
+            let fileInput = newSection.querySelector('.productImageUpload');
+            let previewImg = newSection.querySelector('.previewImage');
+            fileInput.addEventListener('change', function(e) {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                  previewImg.src = evt.target.result;
+                  previewImg.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+              } else {
+                previewImg.src = "";
+                previewImg.style.display = "none";
+              }
+            });
+
+            // Extra maatrijen toevoegen
+            let addSizeRowBtn = newSection.querySelector('.addSizeRowBtn');
+            let sizeTableBody = newSection.querySelector('.sizeTable tbody');
+            addSizeRowBtn.addEventListener('click', function() {
+              let tr = document.createElement('tr');
+
+              let tdMaat = document.createElement('td');
+              let inputMaat = document.createElement('input');
+              inputMaat.type = "text";
+              inputMaat.placeholder = "Bijv. S, 152...";
+              inputMaat.className = "form-control";
+              tdMaat.appendChild(inputMaat);
+
+              let tdAantal = document.createElement('td');
+              let inputAantal = document.createElement('input');
+              inputAantal.type = "number";
+              inputAantal.placeholder = "Aantal...";
+              inputAantal.className = "form-control";
+              tdAantal.appendChild(inputAantal);
+
+              let tdLetter = document.createElement('td');
+              let inputLetter = document.createElement('input');
+              inputLetter.type = "text";
+              inputLetter.placeholder = "Bijv. A";
+              inputLetter.className = "form-control";
+              tdLetter.appendChild(inputLetter);
+
+              let tdOmsch = document.createElement('td');
+              let inputOmsch = document.createElement('input');
+              inputOmsch.type = "text";
+              inputOmsch.placeholder = "Drukwerk omschrijving";
+              inputOmsch.className = "form-control";
+              tdOmsch.appendChild(inputOmsch);
+
+              let tdKleur = document.createElement('td');
+              let inputKleur = document.createElement('input');
+              inputKleur.type = "text";
+              inputKleur.placeholder = "Kleur";
+              inputKleur.className = "form-control";
+              tdKleur.appendChild(inputKleur);
+
+              tr.appendChild(tdMaat);
+              tr.appendChild(tdAantal);
+              tr.appendChild(tdLetter);
+              tr.appendChild(tdOmsch);
+              tr.appendChild(tdKleur);
+              sizeTableBody.appendChild(tr);
+            });
           }
 
-          // Fileupload + preview
-          let fileInput = newSection.querySelector('.productImageUpload');
-          let previewImg = newSection.querySelector('.previewImage');
-          fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = function(evt) {
-                previewImg.src = evt.target.result;
-                previewImg.style.display = "block";
-              };
-              reader.readAsDataURL(file);
-            } else {
-              previewImg.src = "";
-              previewImg.style.display = "none";
-            }
-          });
-
-          // "+ Maat toevoegen"
-          let addSizeRowBtn = newSection.querySelector('.addSizeRowBtn');
-          let sizeTableBody = newSection.querySelector('.sizeTable tbody');
-          addSizeRowBtn.addEventListener('click', function() {
-            let tr = document.createElement('tr');
-
-            // Maat
-            let tdMaat = document.createElement('td');
-            let inputMaat = document.createElement('input');
-            inputMaat.type = "text";
-            inputMaat.placeholder = "Bijv. S, 152...";
-            inputMaat.className = "form-control";
-            tdMaat.appendChild(inputMaat);
-
-            // Aantal
-            let tdAantal = document.createElement('td');
-            let inputAantal = document.createElement('input');
-            inputAantal.type = "number";
-            inputAantal.placeholder = "Aantal...";
-            inputAantal.className = "form-control";
-            tdAantal.appendChild(inputAantal);
-
-            // Drukwerk letter
-            let tdLetter = document.createElement('td');
-            let inputLetter = document.createElement('input');
-            inputLetter.type = "text";
-            inputLetter.placeholder = "Bijv. A";
-            inputLetter.className = "form-control";
-            tdLetter.appendChild(inputLetter);
-
-            // Drukwerk omschrijving
-            let tdOmsch = document.createElement('td');
-            let inputOmsch = document.createElement('input');
-            inputOmsch.type = "text";
-            inputOmsch.placeholder = "Drukwerk omschrijving";
-            inputOmsch.className = "form-control";
-            tdOmsch.appendChild(inputOmsch);
-
-            // Drukwerk kleur
-            let tdKleur = document.createElement('td');
-            let inputKleur = document.createElement('input');
-            inputKleur.type = "text";
-            inputKleur.placeholder = "Kleur";
-            inputKleur.className = "form-control";
-            tdKleur.appendChild(inputKleur);
-
-            // Rij samenstellen
-            tr.appendChild(tdMaat);
-            tr.appendChild(tdAantal);
-            tr.appendChild(tdLetter);
-            tr.appendChild(tdOmsch);
-            tr.appendChild(tdKleur);
-
-            sizeTableBody.appendChild(tr);
-          });
-
-          // Toevoegen aan itemsContainer
           itemsContainer.appendChild(newSection);
           newSection.scrollIntoView({ behavior: "smooth" });
         });
       });
 
-      // init
       recalcHeights();
     });
     </script>

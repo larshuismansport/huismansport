@@ -10,7 +10,7 @@
     </style>
     <script>
       function confirmDeletion() {
-          return confirm("Weet u zeker dat u deze opdracht wilt verwijderen? Dit kan niet ongedaan gemaakt worden.");
+        return confirm("Weet u zeker dat u deze opdracht wilt verwijderen? Dit kan niet ongedaan gemaakt worden.");
       }
     </script>
   </head>
@@ -46,7 +46,7 @@
         </div>
       </div>
     </nav>      
-    
+
     <!-- Hoofdinhoud -->
     <div class="container mt-5">
       <h1>Opdrachten Overzicht</h1>
@@ -56,7 +56,7 @@
         <input type="text" id="searchInput" class="form-control" placeholder="Zoek opdracht...">
       </div>
       
-      <!-- Filter op status -->
+      <!-- (Eventueel) Filter op status -->
       <div class="mb-3">
         <a href="{{ url_for('list_assignments') }}" class="btn btn-outline-primary">Alle</a>
         <a href="{{ url_for('list_assignments', status='Nieuw') }}" class="btn btn-outline-primary">Nieuw</a>
@@ -70,29 +70,74 @@
           <tr>
             <th>Opdracht Titel</th>
             <th>Klant</th>
-            <th>Omschrijving</th>
+            <th>E-mail</th>
+            <th>Vereniging</th>
+            <th>Factuur Naam</th>
             <th>Status</th>
-            <th>Voorbeeld</th>
+            <th>Bestand</th>
             <th>Acties</th>
           </tr>
         </thead>
         <tbody>
           {% for assignment in assignments %}
           <tr>
+            <!-- 1) Opdracht Titel -->
             <td>{{ assignment.title }}</td>
-            <td>{{ assignment.customer.name }}</td>
-            <td>{{ assignment.description }}</td>
-            <td>{{ assignment.status }}</td>
+            
+            <!-- 2) Klantnaam -->
             <td>
-              {% if assignment.file %}
-              <img src="{{ url_for('static', filename='uploads/' ~ assignment.file) }}" alt="Voorbeeld" style="max-width: 100px;">
+              {% if assignment.customer %}
+                {{ assignment.customer.name }}
               {% else %}
-              Geen
+                Geen klant gekoppeld
               {% endif %}
             </td>
+            
+            <!-- 3) E-mail van klant -->
+            <td>
+              {% if assignment.customer %}
+                {{ assignment.customer.email }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            
+            <!-- 4) Vereniging (zit in customer.vereniging) -->
+            <td>
+              {% if assignment.customer and assignment.customer.vereniging %}
+                {{ assignment.customer.vereniging }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            
+            <!-- 5) Factuur Naam (zit in assignment.customer.billing_info) -->
+            <td>
+              {% if assignment.customer and assignment.customer.billing_info %}
+                {{ assignment.customer.billing_info.name }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            
+            <!-- 6) Status (assignment.status) -->
+            <td>{{ assignment.status }}</td>
+            
+            <!-- 7) Bestand / voorbeeld (assignment.file) -->
+            <td>
+              {% if assignment.file %}
+                <img src="{{ url_for('static', filename='uploads/' ~ assignment.file) }}" 
+                     alt="Voorbeeld" style="max-width: 100px;">
+              {% else %}
+                Geen
+              {% endif %}
+            </td>
+            
+            <!-- 8) Acties -->
             <td>
               <a href="{{ url_for('edit_assignment', id=assignment.id) }}" class="btn btn-sm btn-warning">Bewerk</a>
-              <form action="{{ url_for('delete_assignment', id=assignment.id) }}" method="post" style="display:inline;" onsubmit="return confirmDeletion();">
+              <form action="{{ url_for('delete_assignment', id=assignment.id) }}" 
+                    method="post" style="display:inline;" onsubmit="return confirmDeletion();">
                 <button type="submit" class="btn btn-sm btn-danger">Verwijder</button>
               </form>
             </td>
@@ -100,6 +145,7 @@
           {% endfor %}
         </tbody>
       </table>
+      
       <a href="{{ url_for('add_assignment') }}" class="btn btn-primary">Voeg Nieuwe Opdracht Toe</a>
     </div>
     
