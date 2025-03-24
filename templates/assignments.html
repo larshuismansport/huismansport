@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
       #statusFilter { max-width: 300px; }
-      #deadlineFilter { max-width: 300px; }
     </style>
     <script>
       function confirmDeletion() {
@@ -46,19 +45,20 @@
           </ul>
         </div>
       </div>
-    </nav>      
+    </nav>
 
     <!-- Hoofdinhoud -->
     <div class="container mt-5">
-      <h1>Opdrachten Overzicht</h1>
+      <!-- Header met titel en knop rechtsboven -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Opdrachten Overzicht</h1>
+        <a href="{{ url_for('add_assignment') }}" class="btn btn-primary">Voeg Nieuwe Opdracht Toe</a>
+      </div>
       
-      <!-- Zoekfilters -->
+      <!-- Zoekfilter: zoekt nu over het hele blad -->
       <div class="row mb-3">
         <div class="col-md-6">
-          <input type="text" id="statusFilter" class="form-control" placeholder="Filter op status...">
-        </div>
-        <div class="col-md-6">
-          <input type="date" id="deadlineFilter" class="form-control" placeholder="Filter op deadline...">
+          <input type="text" id="statusFilter" class="form-control" placeholder="Zoek op gehele blad...">
         </div>
       </div>
       
@@ -96,77 +96,70 @@
             <!-- 3) Factuur/Bedrijf -->
             <td>
               {% if assignment.customer and assignment.customer.billing_info %}
-                {{ assignment.customer.billing_info.name }}
+                {{ assignment.customer.billing_info.companyname }}
               {% else %}
                 -
               {% endif %}
             </td>
             
-            <!-- 4) Vereniging/Referentie -->
+            <!-- 4) Vereniging/Referentie met dezelfde logica als Opdrachtgever -->
             <td>
-              {% if assignment.customer and assignment.customer.vereniging %}
-                {{ assignment.customer.vereniging }}
-              {% else %}
-                {% if assignment.customer and assignment.customer.referentie %}
-                  {{ assignment.customer.referentie }}
+              {% if assignment.customer %}
+                {% if assignment.customer.vereniging or assignment.customer.referentie %}
+                  {% if assignment.customer.vereniging %}
+                    {{ assignment.customer.vereniging|lower }}
+                  {% endif %}
+                  {% if assignment.customer.referentie %}
+                    <br>
+                    <small>{{ assignment.customer.referentie|lower }}</small>
+                  {% endif %}
                 {% else %}
                   -
                 {% endif %}
+              {% else %}
+                Geen klant gekoppeld
               {% endif %}
             </td>
             
             <!-- 5) Status -->
             <td>{{ assignment.status }}</td>
             
-            <!-- 6) Deadline -->
+            <!-- 6) Deadline met datumnotatie D-m-Y -->
             <td>
               {% if assignment.deadline %}
-                {{ assignment.deadline }}
+                {{ assignment.deadline.strftime('%d-%m-%Y') }}
               {% else %}
                 -
               {% endif %}
             </td>
             
-<!-- 7) Acties -->
-<td>
-  <a href="{{ url_for('edit_assignment', id=assignment.id) }}" class="btn btn-sm btn-primary">Bewerken</a>
-  <form action="{{ url_for('delete_assignment', id=assignment.id) }}" 
-        method="post" style="display:inline;" onsubmit="return confirmDeletion();">
-    <button type="submit" class="btn btn-sm btn-danger">Verwijder</button>
-  </form>
-</td>
-
+            <!-- 7) Acties -->
+            <td>
+              <a href="{{ url_for('edit_assignment', id=assignment.id) }}" class="btn btn-sm btn-primary">Bewerken</a>
+              <form action="{{ url_for('delete_assignment', id=assignment.id) }}" 
+                    method="post" style="display:inline;" onsubmit="return confirmDeletion();">
+                <button type="submit" class="btn btn-sm btn-danger">Verwijder</button>
+              </form>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       
-      <a href="{{ url_for('add_assignment') }}" class="btn btn-primary">Voeg Nieuwe Opdracht Toe</a>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        // Filterfunctie die over de gehele rij zoekt
+        function filterAssignments() {
+          var filterValue = document.getElementById('statusFilter').value.toLowerCase();
+          var rows = document.querySelectorAll('#assignmentsTable tbody tr');
+          rows.forEach(function(row) {
+            var rowText = row.textContent.toLowerCase();
+            row.style.display = rowText.indexOf(filterValue) > -1 ? '' : 'none';
+          });
+        }
+        
+        document.getElementById('statusFilter').addEventListener('keyup', filterAssignments);
+      </script>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Functie om te filteren op status en deadline
-      function filterAssignments() {
-        var statusValue = document.getElementById('statusFilter').value.toLowerCase();
-        var deadlineValue = document.getElementById('deadlineFilter').value;
-        var rows = document.querySelectorAll('#assignmentsTable tbody tr');
-
-        rows.forEach(function(row) {
-          // Haal de status en deadline cellen op (status is kolom 5, deadline is kolom 6; indexering vanaf 0)
-          var statusCell = row.cells[4].textContent.toLowerCase();
-          var deadlineCell = row.cells[5].textContent;
-          
-          var statusMatch = statusCell.indexOf(statusValue) > -1;
-          // Als er een deadline filter is ingevuld, vergelijken we exact of de celwaarde overeenkomt
-          var deadlineMatch = deadlineValue ? (deadlineCell.indexOf(deadlineValue) > -1) : true;
-          
-          row.style.display = (statusMatch && deadlineMatch) ? '' : 'none';
-        });
-      }
-      
-      document.getElementById('statusFilter').addEventListener('keyup', filterAssignments);
-      document.getElementById('deadlineFilter').addEventListener('change', filterAssignments);
-    </script>
   </body>
 </html>

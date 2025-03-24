@@ -277,77 +277,91 @@
                       Selecteer status
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+                      <!-- Nieuwe opties bovenaan toegevoegd -->
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="order besteld" id="status1">
+                          <input class="form-check-input status-option" type="checkbox" value="pasmaten besteld" id="statusNew1" {% if assignment and assignment.status_opdracht and 'pasmaten besteld' in assignment.status_opdracht %}checked{% endif %}>
+                          <label class="form-check-label" for="statusNew1">pasmaten besteld</label>
+                        </div>
+                      </li>
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="pasmaten bij de klant" id="statusNew2" {% if assignment and assignment.status_opdracht and 'pasmaten bij de klant' in assignment.status_opdracht %}checked{% endif %}>
+                          <label class="form-check-label" for="statusNew2">pasmaten bij de klant</label>
+                        </div>
+                      </li>
+                      <!-- Bestaande opties -->
+                      <li class="px-3">
+                        <div class="form-check">
+                          <input class="form-check-input status-option" type="checkbox" value="order besteld" id="status1" {% if assignment and assignment.status_opdracht and 'order besteld' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status1">order besteld</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="order geleverd" id="status2">
+                          <input class="form-check-input status-option" type="checkbox" value="order geleverd" id="status2" {% if assignment and assignment.status_opdracht and 'order geleverd' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status2">order geleverd</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="order compleet" id="status3">
+                          <input class="form-check-input status-option" type="checkbox" value="order compleet" id="status3" {% if assignment and assignment.status_opdracht and 'order compleet' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status3">order compleet</label>
                         </div>
                       </li>
                       <li><hr class="dropdown-divider"></li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="drukwerk voorbereid" id="status4">
+                          <input class="form-check-input status-option" type="checkbox" value="drukwerk voorbereid" id="status4" {% if assignment and assignment.status_opdracht and 'drukwerk voorbereid' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status4">drukwerk voorbereid</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="aan het drukken" id="status5">
+                          <input class="form-check-input status-option" type="checkbox" value="aan het drukken" id="status5" {% if assignment and assignment.status_opdracht and 'aan het drukken' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status5">aan het drukken</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="drukwerk afgerond" id="status6">
+                          <input class="form-check-input status-option" type="checkbox" value="drukwerk afgerond" id="status6" {% if assignment and assignment.status_opdracht and 'drukwerk afgerond' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status6">drukwerk afgerond</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="gecontroleerd" id="status7">
+                          <input class="form-check-input status-option" type="checkbox" value="gecontroleerd" id="status7" {% if assignment and assignment.status_opdracht and 'gecontroleerd' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status7">gecontroleerd</label>
                         </div>
                       </li>
                       <li><hr class="dropdown-divider"></li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="offerte gestuurd" id="status8">
+                          <input class="form-check-input status-option" type="checkbox" value="offerte gestuurd" id="status8" {% if assignment and assignment.status_opdracht and 'offerte gestuurd' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status8">offerte gestuurd</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="voorbeelden gestuurd" id="status9">
+                          <input class="form-check-input status-option" type="checkbox" value="voorbeelden gestuurd" id="status9" {% if assignment and assignment.status_opdracht and 'voorbeelden gestuurd' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status9">voorbeelden gestuurd</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="factuur gestuurd" id="status10">
+                          <input class="form-check-input status-option" type="checkbox" value="factuur gestuurd" id="status10" {% if assignment and assignment.status_opdracht and 'factuur gestuurd' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status10">factuur gestuurd</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="klant bericht" id="status11">
+                          <input class="form-check-input status-option" type="checkbox" value="klant bericht" id="status11" {% if assignment and assignment.status_opdracht and 'klant bericht' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status11">klant bericht</label>
                         </div>
                       </li>
                       <li class="px-3">
                         <div class="form-check">
-                          <input class="form-check-input status-option" type="checkbox" value="volledig afgerond" id="status12">
+                          <input class="form-check-input status-option" type="checkbox" value="volledig afgerond" id="status12" {% if assignment and assignment.status_opdracht and 'volledig afgerond' in assignment.status_opdracht %}checked{% endif %}>
                           <label class="form-check-label" for="status12">volledig afgerond</label>
                         </div>
                       </li>
@@ -365,7 +379,8 @@
                 <div class="card-body">
                   <h3 class="block-title">Deadline</h3>
                   <div class="mb-3">
-                    <input type="date" class="form-control" id="deadline" name="deadline" value="{{ assignment.deadline.strftime('%Y-%m-%d') if assignment and assignment.deadline else '' }}">
+                    <input type="date" class="form-control" id="deadline" name="deadline"
+                      value="{{ assignment.deadline.strftime('%Y-%m-%d') if assignment and assignment.deadline else '' }}">
                   </div>
                 </div>
               </div>
@@ -405,6 +420,8 @@
                           <label class="form-label">Productafbeelding:</label>
                           <div class="d-flex align-items-center">
                             <input type="file" class="form-control productImageUpload" accept="image/*" style="width: auto; min-width: 160px; margin-right: 10px;" name="item_file[]">
+                            <!-- Verborgen input om bestaande bestandsnaam te bewaren -->
+                            <input type="hidden" name="existing_item_file[]" class="existingItemFile" value="">
                             <img src="" alt="Preview" class="img-fluid previewImage" style="display:none; max-width:120px;">
                           </div>
                         </div>
@@ -423,8 +440,16 @@
                             <input type="text" class="form-control" placeholder="Artikelomschrijving" name="item_artikelomschrijving[]">
                           </div>
                           <div class="col-md-6">
-                            <label class="form-label">Artikelnummer:</label>
-                            <input type="text" class="form-control" placeholder="Artikelnummer" name="item_artikelnummer[]">
+                            <div class="row mb-3">
+                              <div class="col-md-6">
+                                <label class="form-label">Artikelnummer:</label>
+                                <input type="text" class="form-control" placeholder="Artikelnummer" name="item_artikelnummer[]">
+                              </div>
+                              <div class="col-md-6">
+                                <label class="form-label">Kleur:</label>
+                                <input type="text" class="form-control" placeholder="Kleur" name="item_kleur_overall[]">
+                              </div>
+                            </div>
                             <label class="form-label mt-3">Prijs:</label>
                             <input type="text" class="form-control" placeholder="Prijs" name="item_prijs[]">
                           </div>
@@ -450,6 +475,8 @@
                             </tr>
                           </tbody>
                         </table>
+                        <!-- Verborgen input voor de JSON-specificaties -->
+                        <input type="hidden" name="item_specs[]" class="itemSpecsInput">
                         <button type="button" class="btn btn-sm btn-secondary addSizeRowBtn">+ Maat toevoegen</button>
                       </div>
                     </div>
@@ -801,6 +828,8 @@
                         <label class="form-label">Productafbeelding:</label>
                         <div class="d-flex align-items-center">
                           <input type="file" class="form-control productImageUpload" accept="image/*" style="width: auto; min-width: 160px; margin-right: 10px;" name="item_file[]">
+                          <!-- Verborgen input om bestaande bestandsnaam te bewaren -->
+                          <input type="hidden" name="existing_item_file[]" class="existingItemFile" value="">
                           <img src="" alt="Preview" class="img-fluid previewImage" style="display:none; max-width:120px;">
                         </div>
                       </div>
@@ -896,6 +925,7 @@
             let addSizeRowBtn = newSection.querySelector('.addSizeRowBtn');
             if(addSizeRowBtn){
               let sizeTableBody = newSection.querySelector('.sizeTable tbody');
+              sizeTableBody.innerHTML = "";
               addSizeRowBtn.addEventListener('click', function() {
                 let tr = document.createElement('tr');
                 let tdMaat = document.createElement('td');
@@ -1015,6 +1045,7 @@
           let addSizeRowBtn = newSection.querySelector('.addSizeRowBtn');
           if(addSizeRowBtn){
             let sizeTableBody = newSection.querySelector('.sizeTable tbody');
+            sizeTableBody.innerHTML = "";
             addSizeRowBtn.addEventListener('click', function() {
               let tr = document.createElement('tr');
               let tdMaat = document.createElement('td');
@@ -1085,33 +1116,159 @@
               prijsInput.value = item.prijs;
             }
           }
+          if(item.kleur) {
+            let kleurOverallInput = newSection.querySelector('input[name="item_kleur_overall[]"]');
+            if(kleurOverallInput) {
+              kleurOverallInput.value = item.kleur;
+            }
+          }
           // Vul de specificatietabel in via de JSON "specs"
           if(item.specs) {
             try {
               let specs = JSON.parse(item.specs);
-              // We gaan ervan uit dat er één rij is in de tabel; pas dit aan als meerdere rijen mogelijk zijn.
-              let maatInput = newSection.querySelector('input[name="item_maat[]"]');
-              let aantalInput = newSection.querySelector('input[name="item_aantal[]"]');
-              let letterInput = newSection.querySelector('input[name="item_letter[]"]');
-              let omschrijvingInput = newSection.querySelector('input[name="item_omschrijving[]"]');
-              let kleurInput = newSection.querySelector('input[name="item_kleur[]"]');
-              if(maatInput) maatInput.value = specs.maat || "";
-              if(aantalInput) aantalInput.value = specs.aantal || "";
-              if(letterInput) letterInput.value = specs.letter || "";
-              if(omschrijvingInput) omschrijvingInput.value = specs.omschrijving || "";
-              if(kleurInput) kleurInput.value = specs.kleur || "";
+              let sizeTableBody = newSection.querySelector('.sizeTable tbody');
+              sizeTableBody.innerHTML = "";
+              if(Array.isArray(specs)) {
+                specs.forEach(function(spec) {
+                  let tr = document.createElement('tr');
+                  let tdMaat = document.createElement('td');
+                  let inputMaat = document.createElement('input');
+                  inputMaat.type = "text";
+                  inputMaat.placeholder = "Bijv. S, M, 152...";
+                  inputMaat.className = "form-control";
+                  inputMaat.name = "item_maat[]";
+                  inputMaat.value = spec.maat || "";
+                  tdMaat.appendChild(inputMaat);
+                  let tdAantal = document.createElement('td');
+                  let inputAantal = document.createElement('input');
+                  inputAantal.type = "number";
+                  inputAantal.placeholder = "Aantal...";
+                  inputAantal.className = "form-control";
+                  inputAantal.name = "item_aantal[]";
+                  inputAantal.value = spec.aantal || "";
+                  tdAantal.appendChild(inputAantal);
+                  let tdLetter = document.createElement('td');
+                  let inputLetter = document.createElement('input');
+                  inputLetter.type = "text";
+                  inputLetter.placeholder = "Bijv. A";
+                  inputLetter.className = "form-control";
+                  inputLetter.name = "item_letter[]";
+                  inputLetter.value = spec.letter || "";
+                  tdLetter.appendChild(inputLetter);
+                  let tdOmsch = document.createElement('td');
+                  let inputOmsch = document.createElement('input');
+                  inputOmsch.type = "text";
+                  inputOmsch.placeholder = "Drukwerk omschrijving";
+                  inputOmsch.className = "form-control";
+                  inputOmsch.name = "item_omschrijving[]";
+                  inputOmsch.value = spec.omschrijving || "";
+                  tdOmsch.appendChild(inputOmsch);
+                  let tdKleur = document.createElement('td');
+                  let inputKleur = document.createElement('input');
+                  inputKleur.type = "text";
+                  inputKleur.placeholder = "Kleur";
+                  inputKleur.className = "form-control";
+                  inputKleur.name = "item_kleur[]";
+                  inputKleur.value = spec.kleur || "";
+                  tdKleur.appendChild(inputKleur);
+                  tr.appendChild(tdMaat);
+                  tr.appendChild(tdAantal);
+                  tr.appendChild(tdLetter);
+                  tr.appendChild(tdOmsch);
+                  tr.appendChild(tdKleur);
+                  sizeTableBody.appendChild(tr);
+                });
+              } else {
+                let spec = specs;
+                let tr = document.createElement('tr');
+                let tdMaat = document.createElement('td');
+                let inputMaat = document.createElement('input');
+                inputMaat.type = "text";
+                inputMaat.placeholder = "Bijv. S, M, 152...";
+                inputMaat.className = "form-control";
+                inputMaat.name = "item_maat[]";
+                inputMaat.value = spec.maat || "";
+                tdMaat.appendChild(inputMaat);
+                let tdAantal = document.createElement('td');
+                let inputAantal = document.createElement('input');
+                inputAantal.type = "number";
+                inputAantal.placeholder = "Aantal...";
+                inputAantal.className = "form-control";
+                inputAantal.name = "item_aantal[]";
+                inputAantal.value = spec.aantal || "";
+                tdAantal.appendChild(inputAantal);
+                let tdLetter = document.createElement('td');
+                let inputLetter = document.createElement('input');
+                inputLetter.type = "text";
+                inputLetter.placeholder = "Bijv. A";
+                inputLetter.className = "form-control";
+                inputLetter.name = "item_letter[]";
+                inputLetter.value = spec.letter || "";
+                tdLetter.appendChild(inputLetter);
+                let tdOmsch = document.createElement('td');
+                let inputOmsch = document.createElement('input');
+                inputOmsch.type = "text";
+                inputOmsch.placeholder = "Drukwerk omschrijving";
+                inputOmsch.className = "form-control";
+                inputOmsch.name = "item_omschrijving[]";
+                inputOmsch.value = spec.omschrijving || "";
+                tdOmsch.appendChild(inputOmsch);
+                let tdKleur = document.createElement('td');
+                let inputKleur = document.createElement('input');
+                inputKleur.type = "text";
+                inputKleur.placeholder = "Kleur";
+                inputKleur.className = "form-control";
+                inputKleur.name = "item_kleur[]";
+                inputKleur.value = spec.kleur || "";
+                tdKleur.appendChild(inputKleur);
+                tr.appendChild(tdMaat);
+                tr.appendChild(tdAantal);
+                tr.appendChild(tdLetter);
+                tr.appendChild(tdOmsch);
+                tr.appendChild(tdKleur);
+                sizeTableBody.appendChild(tr);
+              }
             } catch(e) {
               console.error("Error parsing specs JSON", e);
             }
           }
-          // Toon preview als er al een bestand is opgeslagen
+          // Toon preview en vul verborgen input als er al een bestand is opgeslagen
           if(item.file) {
             previewImg.src = '/static/uploads/' + item.file;
             previewImg.style.display = "block";
+            let hiddenInput = newSection.querySelector('.existingItemFile');
+            if (hiddenInput) {
+              hiddenInput.value = item.file;
+            }
           }
           itemsContainer.appendChild(newSection);
         });
       }
+
+      // F) Voor het opslaan: verzamel per item de specificatietabel-rijen in de verborgen input "item_specs[]"
+      document.getElementById('editCustomerForm').addEventListener('submit', function(e) {
+        document.querySelectorAll('#itemsContainer .card').forEach(function(itemSection) {
+          let sizeTable = itemSection.querySelector('.sizeTable');
+          if(sizeTable) {
+            let specsArray = [];
+            let rows = sizeTable.querySelectorAll('tbody tr');
+            rows.forEach(function(row) {
+              let spec = {
+                maat: row.querySelector('input[name="item_maat[]"]').value,
+                aantal: row.querySelector('input[name="item_aantal[]"]').value,
+                letter: row.querySelector('input[name="item_letter[]"]').value,
+                omschrijving: row.querySelector('input[name="item_omschrijving[]"]').value,
+                kleur: row.querySelector('input[name="item_kleur[]"]').value
+              };
+              specsArray.push(spec);
+            });
+            let specsInput = itemSection.querySelector('.itemSpecsInput');
+            if(specsInput) {
+              specsInput.value = JSON.stringify(specsArray);
+            }
+          }
+        });
+      });
 
       // Laad bestaande dynamische items (indien aanwezig)
       loadDynamicItems();

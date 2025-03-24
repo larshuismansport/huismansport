@@ -72,6 +72,7 @@ class AssignmentItem(db.Model):
     # Nieuwe velden:
     artikelnummer = db.Column(db.String(100))
     prijs = db.Column(db.String(50))
+    kleur = db.Column(db.String(50))
     specs = db.Column(db.Text)  # JSON-string met specificatietabelgegevens
 
     def __repr__(self):
@@ -120,8 +121,13 @@ def add_customer():
             selected_verenigingen.append(andere_vereniging)
         vereniging_str = ','.join(selected_verenigingen) if selected_verenigingen else None
         
-        new_customer = Customer(name=name, email=email, telefoon=telefoon,
-                                vereniging=vereniging_str, referentie=referentie)
+        new_customer = Customer(
+            name=name, 
+            email=email, 
+            telefoon=telefoon,
+            vereniging=vereniging_str, 
+            referentie=referentie
+        )
         db.session.add(new_customer)
         db.session.commit()
         
@@ -287,12 +293,8 @@ def add_assignment():
         item_artikelomschrijvingen = request.form.getlist('item_artikelomschrijving[]')
         item_artikelnummers = request.form.getlist('item_artikelnummer[]')
         item_prijzen = request.form.getlist('item_prijs[]')
-        # Specificatietabel (veronderstel één rij per product voor dit voorbeeld)
-        spec_maats = request.form.getlist('item_maat[]')
-        spec_aantals = request.form.getlist('item_aantal[]')
-        spec_letters = request.form.getlist('item_letter[]')
-        spec_omschrijvingen = request.form.getlist('item_omschrijving[]')
-        spec_kleuren = request.form.getlist('item_kleur[]')
+        item_kleuren = request.form.getlist('item_kleur_overall[]')
+        item_specs = request.form.getlist('item_specs[]')
         item_files = request.files.getlist('item_file[]')
         
         for i in range(len(item_types)):
@@ -302,14 +304,7 @@ def add_assignment():
                 if file_field and allowed_file(file_field.filename):
                     item_filename = secure_filename(file_field.filename)
                     file_field.save(os.path.join(app.config['UPLOAD_FOLDER'], item_filename))
-            # Bouw een JSON-string voor de specificaties (één rij per product)
-            specs = json.dumps({
-                "maat": spec_maats[i] if i < len(spec_maats) else "",
-                "aantal": spec_aantals[i] if i < len(spec_aantals) else "",
-                "letter": spec_letters[i] if i < len(spec_letters) else "",
-                "omschrijving": spec_omschrijvingen[i] if i < len(spec_omschrijvingen) else "",
-                "kleur": spec_kleuren[i] if i < len(spec_kleuren) else ""
-            })
+            specs = item_specs[i] if i < len(item_specs) else "[]"
             new_item = AssignmentItem(
                 assignment_id=new_assignment.id,
                 item_type=item_types[i],
@@ -317,6 +312,7 @@ def add_assignment():
                 artikel_omschrijving=item_artikelomschrijvingen[i],
                 artikelnummer=item_artikelnummers[i] if i < len(item_artikelnummers) else "",
                 prijs=item_prijzen[i] if i < len(item_prijzen) else "",
+                kleur=item_kleuren[i] if i < len(item_kleuren) else "",
                 file=item_filename,
                 specs=specs
             )
@@ -377,32 +373,29 @@ def edit_assignment(id):
             db.session.delete(item)
         db.session.commit()
         
+        # Lees de dynamische items en de verborgen inputs in
         item_types = request.form.getlist('item_type[]')
         item_merks = request.form.getlist('item_merk[]')
         item_artikelomschrijvingen = request.form.getlist('item_artikelomschrijving[]')
         item_artikelnummers = request.form.getlist('item_artikelnummer[]')
         item_prijzen = request.form.getlist('item_prijs[]')
-        spec_maats = request.form.getlist('item_maat[]')
-        spec_aantals = request.form.getlist('item_aantal[]')
-        spec_letters = request.form.getlist('item_letter[]')
-        spec_omschrijvingen = request.form.getlist('item_omschrijving[]')
-        spec_kleuren = request.form.getlist('item_kleur[]')
+        item_kleuren = request.form.getlist('item_kleur_overall[]')
+        item_specs = request.form.getlist('item_specs[]')
         item_files = request.files.getlist('item_file[]')
+        existing_files = request.form.getlist('existing_item_file[]')
         
         for i in range(len(item_types)):
             item_filename = None
+            # Controleer of er een nieuw bestand is geüpload
             if i < len(item_files):
                 file_field = item_files[i]
                 if file_field and allowed_file(file_field.filename):
                     item_filename = secure_filename(file_field.filename)
                     file_field.save(os.path.join(app.config['UPLOAD_FOLDER'], item_filename))
-            specs = json.dumps({
-                "maat": spec_maats[i] if i < len(spec_maats) else "",
-                "aantal": spec_aantals[i] if i < len(spec_aantals) else "",
-                "letter": spec_letters[i] if i < len(spec_letters) else "",
-                "omschrijving": spec_omschrijvingen[i] if i < len(spec_omschrijvingen) else "",
-                "kleur": spec_kleuren[i] if i < len(spec_kleuren) else ""
-            })
+            # Als er geen nieuw bestand is, gebruik dan de bestaande bestandsnaam uit de verborgen input
+            if not item_filename and existing_files and i < len(existing_files) and existing_files[i]:
+                item_filename = existing_files[i]
+            specs = item_specs[i] if i < len(item_specs) else "[]"
             new_item = AssignmentItem(
                 assignment_id=assignment.id,
                 item_type=item_types[i],
@@ -411,6 +404,7 @@ def edit_assignment(id):
                 artikelnummer=item_artikelnummers[i] if i < len(item_artikelnummers) else "",
                 prijs=item_prijzen[i] if i < len(item_prijzen) else "",
                 file=item_filename,
+                kleur=item_kleuren[i] if i < len(item_kleuren) else "",
                 specs=specs
             )
             db.session.add(new_item)
@@ -419,7 +413,7 @@ def edit_assignment(id):
         flash('Opdracht en alle items succesvol bijgewerkt!', 'success')
         return redirect(url_for('list_assignments'))
     
-    # Bouw de JSON-string voor de dynamische items, nu inclusief het bestand veld
+    # Bouw de JSON-string voor de dynamische items, inclusief het bestandveld
     items_data = json.dumps([
         {
             'type': item.item_type,
@@ -427,6 +421,7 @@ def edit_assignment(id):
             'artikelOmschrijving': item.artikel_omschrijving,
             'artikelnummer': item.artikelnummer,
             'prijs': item.prijs,
+            'kleur': item.kleur,
             'specs': item.specs,
             'file': item.file  # Bestandsnaam van de geüploade afbeelding/bestand
         }
@@ -508,12 +503,6 @@ def save_billing_info():
         "phone": phone,
         "email": email
     }}
-
-@app.route('/billing_infos/edit/<int:id>', methods=['GET', 'POST'])
-def edit_billing_info(id):
-    # Logica voor bewerken
-    pass
-
 
 # Nieuwe route: zoek in de klanten (dynamisch via AJAX)
 @app.route('/search_customers')
